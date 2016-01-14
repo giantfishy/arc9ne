@@ -1,0 +1,9 @@
+tree1
+
+#0
+place tree1 0 0 1
+place tree1 0.1 0 0.8
+place tree1 0.2 0 0.6
+
+#8
+camera 0.5 0
