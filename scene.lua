@@ -25,8 +25,14 @@ function Scene.new(filename)
 	return self
 end
 
-function Scene.draw(self)
+function Scene.draw(self, canvas, eyeoffset)
 	if self.keyframe == 0 then return end
+	if eyeoffset == nil then eyeoffset = 0 end
+	
+	g.setCanvas(canvas)
+	g.clear()
+	g.push()
+	g.translate(-(love.graphics.getWidth() - canvas:getWidth())/2, -(love.graphics.getHeight() - canvas:getHeight())/2)
 	
 	local cx = self.cam_x
 	local cy = self.cam_y
@@ -39,10 +45,11 @@ function Scene.draw(self)
 	end
 	
 	for i, sprite in ipairs(self.sprites) do
-		sprite:draw(cx, cy)
+		sprite:draw(cx+eyeoffset, cy)
 	end
 	
-	--g.print(string.format("%.2f", self.time), 0, 0)
+	g.pop()
+	g.setCanvas()
 end
 
 function Scene.update(self, dt)

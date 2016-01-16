@@ -4,12 +4,14 @@ mountains1
 mountains2
 
 #0
-place grass1 0 1 1
-place tree1 -0.5 0.3 0.8
+place grass1 0 0.9 1
+place tree1 -0.4 0.2 0.8
 place mountains1 0 0 0.3
 place mountains2 0 0 0.1
+pause
 
 #5
-pause
-camera 0.1 0.1
-load act1/scene2
+camera -0.5 0
+
+#15
+camera 1 0
