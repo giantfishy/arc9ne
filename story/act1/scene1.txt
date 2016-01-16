@@ -6,7 +6,7 @@ bg
 cloud
 
 #0
-place bg 0 0 0
+place bg 0 -0.2 0
 place ground 0 0.6 1
 place tree -0.5 -0.2 0.5
 place rock 0 0.5 0.8
@@ -14,6 +14,9 @@ place cloud 0.2 -0.4 0.2
 pause
 
 #5
+camera -0.5 0
+
+#6
 camera -0.5 0
 
 #15
