@@ -137,6 +137,15 @@ function Scene.doKeyframe(self, commands)
 	for i, c in ipairs(commands) do
 		--print("  "..c)
 		
+		--[[
+		TODO:
+		- make a table of accepted commands, with how many additional tokens each command expects
+		  e.g. self.commands["place"] = 4
+		- make a class which has a function for each command
+		- make it call the command on that class, with _G, somehow? figure that out?
+		- alternatively i think Commands[ tokens[1] ]() or similar could work
+		]]--
+		
 		local tokens = splitStr(c)
 		if tokens == nil or #tokens == 0 then
 			print("Command \""..c.."\" failed to parse!")
