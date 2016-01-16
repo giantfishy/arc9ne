@@ -79,6 +79,7 @@ function Scene.loadScene(self, filename)
 	end
 	
 	local loadingAssets = true
+	local dir = ""
 	
 	for line in io.lines(filename) do
 		if line:len() == 0 then
@@ -87,7 +88,11 @@ function Scene.loadScene(self, filename)
 		end
 		
 		if loadingAssets then
-			self:loadImage(line)
+			if startsWith(line, "/") then
+				dir = line:sub(2).."/"
+			else
+				self:loadImage(dir..line)
+			end
 		else
 			if startsWith(line, "#") then -- this line is the start of a keyframe definition
 				local prev = self.keyframes[#self.keyframes]
@@ -109,9 +114,20 @@ end
 
 function Scene.loadImage(self, imagename)
 	local img = g.newImage("assets/"..imagename..".png")
-	self.images[imagename] = img
 	
-	print("Loaded image "..imagename..".png!")
+	local key = imagename -- where to put the image in self.images
+	if key:find("/") ~= nil then
+		key = key:sub(key:find("/") + 1)
+	end
+	if self.images[key] ~= nil then
+		local num = 2
+		while self.images[key..num] ~= nil do num = num + 1 end
+		key = key..num
+	end
+	
+	self.images[key] = img
+	
+	print("Loaded image "..imagename..".png as '"..key.."'")
 end
 
 function Scene.doKeyframe(self, commands)

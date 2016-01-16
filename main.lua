@@ -12,7 +12,7 @@ end
 
 function love.draw()
 	if currentscene ~= nil then
-		local eyedist = 0.02
+		local eyedist = 0.1
 		currentscene:draw(lefteye, eyedist/2)
 		currentscene:draw(righteye, -eyedist/2)
 	end
