@@ -1,3 +1,5 @@
+-- KEYFRAME.LUA - holds information and commands for a specific point in time
+
 local Keyframe = {}
 Keyframe.__index = Keyframe
 

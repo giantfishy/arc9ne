@@ -6,15 +6,18 @@ local mainCanvas = nil
 local lefteye = nil
 local righteye = nil
 
-local view3D = false 
+local view3D = true
+
+local w = love.graphics.getWidth()
+local h = love.graphics.getHeight()
 
 function love.load()
 	currentscene = Scene.new("act1/scene1")
 	
 	-- TODO: make the canvas sizes and window size customisable
-	mainCanvas = love.graphics.newCanvas(1000, 500)
-	lefteye = love.graphics.newCanvas(500, 500)
-	righteye = love.graphics.newCanvas(500, 500)
+	mainCanvas = love.graphics.newCanvas(w, h)
+	lefteye = love.graphics.newCanvas(w/2, h)
+	righteye = love.graphics.newCanvas(w/2, h)
 end
 
 function love.draw()
@@ -25,7 +28,7 @@ function love.draw()
 			currentscene:draw(righteye, -eyedist/2)
 			
 			love.graphics.draw(righteye, 0, 0)
-			love.graphics.draw(lefteye, 500, 0)
+			love.graphics.draw(lefteye, w/2, 0)
 		else
 			currentscene:draw(mainCanvas)
 			

@@ -1,3 +1,5 @@
+-- SCENE.LUA - class for loading images and keyframes from a file, and displaying them accordingly
+
 local Keyframe = require('keyframe')
 local Sprite = require('sprite')
 

@@ -1,3 +1,5 @@
+-- SPRITE.LUA - an image with a location in (pseudo)3D space. knows how to draw itself
+
 local Sprite = {}
 Sprite.__index = Sprite
 
