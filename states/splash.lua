@@ -9,9 +9,9 @@ local imageTime = 2.5 -- total time an image is on screen
 function Splash.new()
 	local self = setmetatable({}, Splash)
 	self.images = {}
-	local imageNames = {"logo", "love2d"}
+	local imageNames = {"logo.png", "love2d.png"}
 	for i=1,#imageNames do
-		self.images[i] = love.graphics.newImage("splash/"..imageNames[i]..".png")
+		self.images[i] = love.graphics.newImage("splash/"..imageNames[i])
 	end
 	
 	self.time = 0
