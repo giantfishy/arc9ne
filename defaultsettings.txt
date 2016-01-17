@@ -2,3 +2,4 @@ width=800
 height=600
 view3D=true
 eyeDistance=0.1
+smoothMovement=false

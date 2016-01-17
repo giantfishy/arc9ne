@@ -1,3 +1,5 @@
+local Scene = require('../scene')
+
 local Comic = {}
 Comic.__index = Comic
 
@@ -16,19 +18,24 @@ function Comic.new(settings)
 	return self
 end
 
+function Comic.load(self, filename)
+	self.currentscene = Scene.new(filename)
+end
+
 function Comic.draw(self)
 	local sc = self.currentscene
 	
 	if sc ~= nil then
 		if self.settings.view3D then
 			local eyedist = self.settings.eyeDistance
-			sc:draw(self.lefteye, eyedist/2)
-			sc:draw(self.righteye, -eyedist/2)
+			local smooth = self.settings.smoothMovement
+			sc:draw(self.lefteye, eyedist/2, smooth)
+			sc:draw(self.righteye, -eyedist/2, smooth)
 			
 			love.graphics.draw(self.righteye, 0, 0)
 			love.graphics.draw(self.lefteye, love.graphics.getWidth()/2, 0)
 		else
-			sc:draw(self.mainCanvas)
+			sc:draw(self.mainCanvas, 0, smooth)
 			
 			love.graphics.draw(self.mainCanvas, 0, 0)
 		end
@@ -47,7 +54,13 @@ function Comic.update(self, dt)
 end
 
 function Comic.keypressed(self, key)
-	self.currentscene.paused = false
+	if key == "space" then
+		self.currentscene.paused = false
+	elseif key == "3" then
+		self.settings.view3D = not self.settings.view3D
+	elseif key == "s" then
+		self.settings.smoothMovement = not self.settings.smoothMovement
+	end
 end
 
 return Comic

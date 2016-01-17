@@ -27,9 +27,10 @@ function Scene.new(filename)
 	return self
 end
 
-function Scene.draw(self, canvas, eyeoffset)
+function Scene.draw(self, canvas, eyeoffset, smooth)
 	if self.keyframe == 0 then return end
 	if eyeoffset == nil then eyeoffset = 0 end
+	if smooth == nil then smooth = true end
 	
 	g.setCanvas(canvas)
 	g.clear()
@@ -47,7 +48,7 @@ function Scene.draw(self, canvas, eyeoffset)
 	end
 	
 	for i, sprite in ipairs(self.sprites) do
-		sprite:draw(cx+eyeoffset, cy)
+		sprite:draw(cx+eyeoffset, cy, smooth)
 	end
 	
 	g.pop()

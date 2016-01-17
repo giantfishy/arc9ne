@@ -1,15 +1,13 @@
 local Menu = require('states/menu')
 local Comic = require('states/comic')
 
-local Scene = require('scene')
-
 local state = nil
 local settings = nil
 
 function love.load()
 	settings = loadSettings()
 	state = Comic.new(settings)
-	state.currentscene = Scene.new("act1/scene1")
+	state:load("act1/scene1")
 end
 
 function love.draw()
