@@ -40,8 +40,7 @@ end
 function Splash.update(self, dt)
 	self.time = self.time + dt
 	if self.time >= #self.images * imageTime then
-		changeState("comic")
-		loadScene("act1/scene1")
+		changeState("menu")
 	end
 end
 

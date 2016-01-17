@@ -5,9 +5,14 @@ local Splash = require('states/splash')
 local allStates = {}
 local state = nil
 local settings = nil
+local fonts = {}
 
 function love.load()
 	settings = loadSettings()
+	
+	fonts.title = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
+	fonts.selected = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
+	fonts.menuItem = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	
 	allStates["menu"] = Menu.new()
 	allStates["comic"] = Comic.new(settings)
@@ -43,6 +48,10 @@ function loadScene(filename)
 	if state == allStates.comic then
 		state:load(filename)
 	end
+end
+
+function setFont(name)
+	love.graphics.setFont(fonts[name])
 end
 
 -- function to load the settings.txt and make a table out of it
