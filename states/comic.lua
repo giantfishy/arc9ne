@@ -1,3 +1,5 @@
+-- COMIC.LUA - for drawing any scenes from the comic itself
+
 local Scene = require('../scene')
 
 local Comic = {}
@@ -8,14 +10,18 @@ function Comic.new(settings)
 	self.settings = settings
 	self.currentscene = nil
 	
+	self:makeCanvases()
+	
+	return self
+end
+
+function Comic.makeCanvases(self)
 	local w = love.graphics.getWidth()
 	local h = love.graphics.getHeight()
 	
 	self.mainCanvas = love.graphics.newCanvas(w, h)
 	self.lefteye = love.graphics.newCanvas(w/2, h)
 	self.righteye = love.graphics.newCanvas(w/2, h)
-	
-	return self
 end
 
 function Comic.load(self, filename)
@@ -25,10 +31,14 @@ end
 function Comic.draw(self)
 	local sc = self.currentscene
 	
+	if self.mainCanvas == nil or self.lefteye == nil or self.righteye == nil then
+		self:makeCanvases()
+	end
+	
 	if sc ~= nil then
+		local smooth = self.settings.smoothMovement
 		if self.settings.view3D then
 			local eyedist = self.settings.eyeDistance
-			local smooth = self.settings.smoothMovement
 			sc:draw(self.lefteye, eyedist/2, smooth)
 			sc:draw(self.righteye, -eyedist/2, smooth)
 			

@@ -1,5 +1,6 @@
 width=800
 height=600
-view3D=true
+fullscreen=false
+view3D=false
 eyeDistance=0.1
-smoothMovement=false
+smoothMovement=true

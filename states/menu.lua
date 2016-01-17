@@ -1,3 +1,5 @@
+-- MENU.LUA - for drawing the menus and taking user input
+
 local Menu = {}
 Menu.__index = Menu
 

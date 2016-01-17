@@ -1,13 +1,19 @@
 local Menu = require('states/menu')
 local Comic = require('states/comic')
+local Splash = require('states/splash')
 
+local allStates = {}
 local state = nil
 local settings = nil
 
 function love.load()
 	settings = loadSettings()
-	state = Comic.new(settings)
-	state:load("act1/scene1")
+	
+	allStates["menu"] = Menu.new()
+	allStates["comic"] = Comic.new(settings)
+	allStates["splash"] = Splash.new()
+	
+	state = allStates.splash
 end
 
 function love.draw()
@@ -22,13 +28,31 @@ function love.keypressed(key, scancode, isrepeat)
 	state:keypressed(key)
 end
 
+function changeState(stateType)
+	local newState = allStates[stateType]
+	
+	if state == allStates.splash and newState ~= nil then
+		love.window.setMode(settings.width, settings.height, {fullscreen=settings.fullscreen, borderless=false})
+	end
+	
+	if newState ~= nil then state = newState end
+	if state == allStates.comic then state:makeCanvases() end
+end
+
+function loadScene(filename)
+	if state == allStates.comic then
+		state:load(filename)
+	end
+end
+
 -- function to load the settings.txt and make a table out of it
 function loadSettings()
 	local result = {}
 	local fs = love.filesystem
 	
 	local filename = "settings.txt"
-	if not fs.exists(filename) then
+	--if not fs.exists(filename) then
+	if true then -- TEMPORARY change, so i can just change defaultsettings.txt each time
 		print("Writing default settings.\n")
 		local settingsFile = fs.newFile("settings.txt", "w")
 		for line in io.lines(love.filesystem.getSourceBaseDirectory().."/arc9ne/defaultsettings.txt") do
