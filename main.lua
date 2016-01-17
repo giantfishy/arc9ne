@@ -6,13 +6,18 @@ local allStates = {}
 local state = nil
 local settings = nil
 local fonts = {}
+local audio = {}
 
 function love.load()
 	settings = loadSettings()
 	
-	fonts.title = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
-	fonts.selected = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
-	fonts.menuItem = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
+	love.audio.setVolume(settings.volume)
+	audio["menu"] = love.audio.newSource("sound/menu.ogg")
+	audio["menu"]:setLooping(true)
+	
+	fonts["title"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
+	fonts["selected"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
+	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	
 	allStates["menu"] = Menu.new()
 	allStates["comic"] = Comic.new(settings)
@@ -42,6 +47,8 @@ function changeState(stateType)
 	
 	if newState ~= nil then state = newState end
 	if state == allStates.comic then state:makeCanvases() end
+	
+	if audio[stateType] ~= nil then audio[stateType]:play() end
 end
 
 function loadScene(filename)
