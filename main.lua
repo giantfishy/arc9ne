@@ -11,7 +11,7 @@ local audio = {}
 function love.load()
 	settings = loadSettings()
 	
-	love.audio.setVolume(settings.volume)
+	love.audio.setVolume(tonumber(settings.volume))
 	audio["menu"] = love.audio.newSource("sound/menu.ogg")
 	audio["menu"]:setLooping(true)
 	
@@ -45,13 +45,17 @@ function changeState(stateType)
 	local newState = allStates[stateType]
 	
 	if state == allStates.splash and newState ~= nil then
-		love.window.setMode(settings.width, settings.height, {fullscreen=settings.fullscreen, borderless=false})
+		resizeWindow()
 	end
 	
 	if newState ~= nil then state = newState end
 	if state == allStates.comic then state:makeCanvases() end
 	
 	if audio[stateType] ~= nil then audio[stateType]:play() end
+end
+
+function resizeWindow()
+	love.window.setMode(settings.width, settings.height, {fullscreen=settings.fullscreen, borderless=false})
 end
 
 function loadScene(filename)
@@ -62,6 +66,14 @@ end
 
 function getSettings()
 	return settings
+end
+
+function setSettings(newSettings)
+	settings = newSettings
+	love.filesystem.write("settings.txt", "")
+	for key, value in pairs(settings) do
+		love.filesystem.append("settings.txt", key.."="..tostring(value).."\r\n")
+	end
 end
 
 function setFont(name)
@@ -80,14 +92,17 @@ function drawText(text, x, y, align)
 	love.graphics.printf(text, math.floor(x), math.floor(y - height*0.6), love.graphics.getWidth(), "left")
 end
 
+function startsWith(str, start)
+	return (str:sub(1, start:len()) == start)
+end
+
 -- function to load the settings.txt and make a table out of it
 function loadSettings()
 	local result = {}
 	local fs = love.filesystem
 	
 	local filename = "settings.txt"
-	--if not fs.exists(filename) then
-	if true then -- TEMPORARY change, so i can just change defaultsettings.txt each time
+	if not fs.exists(filename) then
 		print("Writing default settings.\n")
 		local settingsFile = fs.newFile("settings.txt", "w")
 		for line in io.lines(love.filesystem.getSourceBaseDirectory().."/arc9ne/defaultsettings.txt") do
@@ -103,10 +118,14 @@ function loadSettings()
 			local key = line:sub(1, split-1)
 			local value = line:sub(split+1)
 			
-			if value == "true" or value == "false" then value = (value == "true") end
+			if value == "true" or value == "false" then
+				value = (value == "true")
+			else
+				value = tonumber(value)
+			end
 			
 			result[key] = value
-			print(key.." = "..tostring(value))
+			--print(key.." = "..tostring(value))
 		end
 	end
 	

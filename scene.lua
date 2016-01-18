@@ -177,10 +177,6 @@ function Scene.doKeyframe(self, commands)
 	print("\nFinished executing keyframe.")
 end
 
-function startsWith(str, start)
-	return (str:sub(1, start:len()) == start)
-end
-
 function splitStr(str)
 	local tokens = {}
 	local index = 1

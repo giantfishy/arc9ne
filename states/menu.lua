@@ -96,6 +96,12 @@ function Menu.keypressed(self, key)
 		end
 	elseif self.menu == "options" then
 		if key == "escape" then
+			self.options:reset()
+			self.menu = "main"
+			self.selected = 3
+		elseif key == "space" or key == "return" or key == "kpenter" then
+			setSettings(self.options.options)
+			self.options.previousOptions = getSettings()
 			self.menu = "main"
 			self.selected = 3
 		elseif key == "up" then
@@ -104,6 +110,15 @@ function Menu.keypressed(self, key)
 		elseif key == "down" then
 			self.selected = self.selected + 1
 			if self.selected > #self.options.items then self.selected = 1 end
+		elseif key == "right" then
+			self.options:increment(1)
+		elseif key == "left" then
+			self.options:increment(-1)
+		elseif key == "r" then
+			local reset = love.window.showMessageBox("reset settings", "are you sure you want to reset the settings to their default values?", {"yes", "no"})
+			if reset == 1 then
+				-- reset
+			end
 		end
 	end
 end
