@@ -1,6 +1,7 @@
 width=800
 height=600
 fullscreen=false
+skipSplash=false
 view3D=false
 eyeDistance=0.1
 smoothMovement=true

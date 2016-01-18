@@ -24,6 +24,9 @@ function love.load()
 	allStates["splash"] = Splash.new()
 	
 	state = allStates.splash
+	if settings.skipSplash then
+		changeState("menu")
+	end
 end
 
 function love.draw()
@@ -57,8 +60,24 @@ function loadScene(filename)
 	end
 end
 
+function getSettings()
+	return settings
+end
+
 function setFont(name)
 	love.graphics.setFont(fonts[name])
+end
+
+function drawText(text, x, y, align)
+	local width = love.graphics.getFont():getWidth(text)
+	local height = love.graphics.getFont():getAscent()
+	
+	if align == "right" then
+		x = x - width
+	elseif align == "center" then
+		x = x - width/2
+	end
+	love.graphics.printf(text, math.floor(x), math.floor(y - height*0.6), love.graphics.getWidth(), "left")
 end
 
 -- function to load the settings.txt and make a table out of it
