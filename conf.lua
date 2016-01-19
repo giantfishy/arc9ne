@@ -9,5 +9,5 @@ function love.conf(t)
 	t.window.title = "arc9ne"
 	t.window.fullscreen = false
 	
-	--t.console = true
+	t.console = true
 end

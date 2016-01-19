@@ -2,6 +2,7 @@
 
 local Keyframe = require('keyframe')
 local Sprite = require('sprite')
+local Commands = require('commands')
 
 local Scene = {}
 Scene.__index = Scene
@@ -14,6 +15,7 @@ function Scene.new(filename)
 	self.images = {}
 	self.sprites = {}
 	self.keyframes = {}
+	self.cameraKeyframes = {}
 	
 	self.time = 0
 	self.keyframe = 0
@@ -37,18 +39,8 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	g.push()
 	g.translate(-(love.graphics.getWidth() - canvas:getWidth())/2, -(love.graphics.getHeight() - canvas:getHeight())/2)
 	
-	local cx = self.cam_x
-	local cy = self.cam_y
-	local nextKey = self:getNextKeyframe()
-	if nextKey ~= nil then
-		local panTime = (nextKey.t - self.keyframes[self.keyframe].t)
-		local percent = 1 - ((nextKey.t - self.time) / panTime)
-		cx = self.cam_x + percent*(nextKey.cam_x - self.cam_x)
-		cy = self.cam_y + percent*(nextKey.cam_y - self.cam_y)
-	end
-	
 	for i, sprite in ipairs(self.sprites) do
-		sprite:draw(cx+eyeoffset, cy, smooth)
+		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth)
 	end
 	
 	g.pop()
@@ -58,7 +50,26 @@ end
 function Scene.update(self, dt)
 	if self.paused == false then self.time = self.time + dt end
 	
-	local nextKey = self:getNextKeyframe()
+	local currentKey = nil
+	local nextKey = nil
+	for i=1,#self.cameraKeyframes do
+		if self.cameraKeyframes[i].t > self.time then
+			currentKey = self.cameraKeyframes[i-1]
+			nextKey = self.cameraKeyframes[i]
+			break
+		end
+	end
+	
+	if nextKey ~= nil then
+		if currentKey == nil then currentKey = {t=0, x=nextKey.x, y=nextKey.y} end -- if there's no keyframe at t=0
+		
+		local panTime = (nextKey.t - currentKey.t) -- time taken to move the camera
+		local percent = 1 - ((nextKey.t - self.time) / panTime)
+		self.cam_x = currentKey.x + percent*(nextKey.x - currentKey.x)
+		self.cam_y = currentKey.y + percent*(nextKey.y - currentKey.y)
+	end
+	
+	nextKey = self:getNextKeyframe()
 	if nextKey ~= nil then
 		if self.time > nextKey.t then
 			self.keyframe = self.keyframe + 1
@@ -105,6 +116,15 @@ function Scene.loadScene(self, filename)
 				local key = self.keyframes[#self.keyframes]
 				if key ~= nil then
 					key:addCommand(line)
+					if startsWith(line, "camera ") then
+						-- add key to cameraKeyframes
+						local coords = splitStr(line)
+						local camkey = {}
+						camkey.t = self.keyframes[#self.keyframes].t
+						camkey.x = tonumber(coords[2])
+						camkey.y = tonumber(coords[3])
+						self.cameraKeyframes[#self.cameraKeyframes+1] = camkey
+					end
 					print("Command \""..line.."\" added to key at "..key.t.." seconds!")
 				else
 					print("No keys yet, cannot add command \""..line.."\"!")
@@ -134,37 +154,13 @@ function Scene.loadImage(self, imagename)
 end
 
 function Scene.doKeyframe(self, commands)
-	-- clean this garbage up later
-	
-	print("Executing keyframe...\n")
-	for i, c in ipairs(commands) do
-		--print("  "..c)
-		
-		--[[
-		TODO:
-		- make a table of accepted commands, with how many additional tokens each command expects
-		  e.g. self.commands["place"] = 4
-		- make a class which has a function for each command
-		- make it call the command on that class, with _G, somehow? figure that out?
-		- alternatively i think Commands[ tokens[1] ]() or similar could work
-		]]--
-		
+	print("Executing keyframe...")
+	for i, c in ipairs(commands) do		
 		local tokens = splitStr(c)
-		if tokens == nil or #tokens == 0 then
+		if c == nil then
 			print("Command \""..c.."\" failed to parse!")
-		else
-			if tokens[1] == "place" and #tokens == 5 then
-				self.sprites[#self.sprites+1] = Sprite.new(self.images[tokens[2]], tonumber(tokens[3]), tonumber(tokens[4]), tonumber(tokens[5]))
-				print("Placed sprite \""..tokens[2].."\" at "..tokens[3]..", "..tokens[4]..", "..tokens[5])
-			elseif tokens[1] == "camera" and #tokens == 3 then
-				self.cam_x = tonumber(tokens[2])
-				self.cam_y = tonumber(tokens[3])
-				print("Moved camera to "..tokens[2]..", "..tokens[3])
-			elseif tokens[1] == "load" and #tokens == 2 then
-				self = Scene.new(tokens[2])
-			elseif tokens[1] == "pause" and #tokens == 1 then
-				self.paused = true
-			end
+		elseif c ~= "" then
+			Commands.parse(self, c)
 		end
 	end
 	
@@ -175,23 +171,6 @@ function Scene.doKeyframe(self, commands)
 	table.sort(self.sprites, sortFunction)
 	
 	print("\nFinished executing keyframe.")
-end
-
-function splitStr(str)
-	local tokens = {}
-	local index = 1
-	local previndex = 1
-	while index ~= nil do
-		index = str:find(" ", index)
-		if index == nil then
-			tokens[#tokens+1] = str:sub(previndex)
-			break
-		end
-		tokens[#tokens+1] = str:sub(previndex, index-1)
-		index = index + 1
-		previndex = index
-	end
-	return tokens
 end
 
 return Scene

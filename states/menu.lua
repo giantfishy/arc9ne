@@ -116,8 +116,9 @@ function Menu.keypressed(self, key)
 			self.options:increment(-1)
 		elseif key == "r" then
 			local reset = love.window.showMessageBox("reset settings", "are you sure you want to reset the settings to their default values?", {"yes", "no"})
-			if reset == 1 then
-				-- reset
+			if reset == 2 then
+				resetSettings()
+				self.options:updateSettings()
 			end
 		end
 	end

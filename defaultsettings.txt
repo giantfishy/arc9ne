@@ -5,4 +5,4 @@ skipSplash=false
 view3D=false
 eyeDistance=0.1
 smoothMovement=true
-volume=0
+volume=0.6

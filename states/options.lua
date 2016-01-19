@@ -164,4 +164,13 @@ function Options.increment(self, amount)
 	end
 end
 
+function Options.updateSettings(self)
+	local w = self.options.width
+	local h = self.options.height
+	self.options = getSettings()
+	
+	if w ~= self.options.width or h ~= self.options.height then resizeWindow() end
+	love.audio.setVolume(self.options.volume)
+end
+
 return Options

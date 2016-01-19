@@ -5,9 +5,9 @@ local Scene = require('../scene')
 local Comic = {}
 Comic.__index = Comic
 
-function Comic.new(settings)
+function Comic.new()
 	local self = setmetatable({}, Comic)
-	self.settings = settings
+	self.settings = getSettings()
 	self.currentscene = nil
 	
 	self:makeCanvases()
@@ -64,12 +64,8 @@ function Comic.update(self, dt)
 end
 
 function Comic.keypressed(self, key)
-	if key == "space" then
+	if key == "space" or key == "return" or key == "kpenter" then
 		self.currentscene.paused = false
-	elseif key == "3" then
-		self.settings.view3D = not self.settings.view3D
-	elseif key == "s" then
-		self.settings.smoothMovement = not self.settings.smoothMovement
 	end
 end
 

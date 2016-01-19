@@ -20,7 +20,7 @@ function love.load()
 	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	
 	allStates["menu"] = Menu.new()
-	allStates["comic"] = Comic.new(settings)
+	allStates["comic"] = Comic.new()
 	allStates["splash"] = Splash.new()
 	
 	state = allStates.splash
@@ -92,6 +92,23 @@ function drawText(text, x, y, align)
 	love.graphics.printf(text, math.floor(x), math.floor(y - height*0.6), love.graphics.getWidth(), "left")
 end
 
+function splitStr(str)
+	local tokens = {}
+	local index = 1
+	local previndex = 1
+	while index ~= nil do
+		index = str:find(" ", index)
+		if index == nil then
+			tokens[#tokens+1] = str:sub(previndex)
+			break
+		end
+		tokens[#tokens+1] = str:sub(previndex, index-1)
+		index = index + 1
+		previndex = index
+	end
+	return tokens
+end
+
 function startsWith(str, start)
 	return (str:sub(1, start:len()) == start)
 end
@@ -129,5 +146,12 @@ function loadSettings()
 		end
 	end
 	
+	settingsFile:close()
+	
 	return result
+end
+
+function resetSettings()
+	love.filesystem.remove("settings.txt")
+	settings = loadSettings()
 end
