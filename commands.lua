@@ -1,3 +1,5 @@
+-- COMMANDS.LUA - for parsing commands in the .txt files which make up the keyframe instructions
+
 local Sprite = require('sprite')
 
 local Commands = {}

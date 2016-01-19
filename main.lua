@@ -51,6 +51,7 @@ function changeState(stateType)
 	if newState ~= nil then state = newState end
 	if state == allStates.comic then state:makeCanvases() end
 	
+	love.audio.stop()
 	if audio[stateType] ~= nil then audio[stateType]:play() end
 end
 

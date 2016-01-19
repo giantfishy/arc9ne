@@ -1,3 +1,5 @@
+-- OPTIONS.LUA - draws and handles the options menu
+
 local Options = {}
 Options.__index = Options
 
