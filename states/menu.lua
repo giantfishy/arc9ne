@@ -80,6 +80,7 @@ function Menu.keypressed(self, key)
 				changeState("comic")
 				loadScene("act1/scene1")
 			elseif item == "options" then
+				self.options = Options.new(self)
 				self.menu = "options"
 				self.selected = 1
 			elseif item == "exit" then
@@ -100,8 +101,18 @@ function Menu.keypressed(self, key)
 			self.menu = "main"
 			self.selected = 3
 		elseif key == "space" or key == "return" or key == "kpenter" then
-			setSettings(self.options.options)
-			self.options.previousOptions = getSettings()
+			local newOptions = self.options.options
+			local resize = false
+			if newOptions.resolution ~= getSettings().resolution or newOptions.fullscreen ~= getSettings().fullscreen then
+				resize = true
+			end
+			
+			setSettings(newOptions)
+			if resize then resizeWindow() end
+			if newOptions.volume == 0 then
+				love.audio.pause()
+				love.audio.rewind()
+			end
 			self.menu = "main"
 			self.selected = 3
 		elseif key == "up" then

@@ -15,7 +15,10 @@ function Options.new(parent)
 	local self = setmetatable({}, Options)
 	
 	self.parent = parent
-	self.options = getSettings()
+	self.options = {}
+	for key, value in pairs(getSettings()) do
+		self.options[key] = value
+	end
 	self.items = {}
 	
 	for key, value in pairs(self.options) do
@@ -136,7 +139,7 @@ function Options.increment(self, amount)
 	local value = self.options[key]
 	
 	if value == true or value == false then -- option is a boolean
-		getSettings()[key] = not value
+		self.options[key] = not value
 	end
 	
 	if tonumber(value) ~= nil then -- option is a number
@@ -152,16 +155,27 @@ function Options.increment(self, amount)
 			end
 			if self.options[key] > maxima[key] then self.options[key] = maxima[key] end
 			if self.options[key] < minima[key] then self.options[key] = minima[key] end
-		else
-			self.options[key] = tonumber(value) + amount*100
 		end
-	end
-	
-	if key == "width" or key == "height" or key == "fullscreen" then
-		resizeWindow()
+	elseif key == "resolution" then
+		local resolutions = {"640x480", "800x600", "1200x900", "1600x1200"}
+		local index = 2 -- default value
+		for i=1,#resolutions do
+			if resolutions[i] == value then index = i end
+		end
+		
+		if amount > 0 then
+			index = index + 1
+			if index > #resolutions then index = #resolutions end
+		else
+			index = index - 1
+			if index < 1 then index = 1 end
+		end
+		
+		self.options[key] = resolutions[index]
 	end
 	
 	if key == "volume" then
+		if value == 0 and self.options.volume > 0 then love.audio.resume() end
 		love.audio.setVolume(self.options[key])
 	end
 end

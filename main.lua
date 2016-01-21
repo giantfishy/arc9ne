@@ -53,10 +53,12 @@ function changeState(stateType)
 	
 	love.audio.stop()
 	if audio[stateType] ~= nil then audio[stateType]:play() end
+	if settings.volume == 0 then love.audio.pause() end
 end
 
 function resizeWindow()
-	love.window.setMode(settings.width, settings.height, {fullscreen=settings.fullscreen, borderless=false})
+	local resolution = splitStr(settings.resolution, "x")
+	love.window.setMode(resolution[1], resolution[2], {fullscreen=settings.fullscreen, borderless=false})
 end
 
 function loadScene(filename)
@@ -93,12 +95,14 @@ function drawText(text, x, y, align)
 	love.graphics.printf(text, math.floor(x), math.floor(y - height*0.6), love.graphics.getWidth(), "left")
 end
 
-function splitStr(str)
+function splitStr(str, split)
+	if split == nil then split = " " end
+	
 	local tokens = {}
 	local index = 1
 	local previndex = 1
 	while index ~= nil do
-		index = str:find(" ", index)
+		index = str:find(split, index)
 		if index == nil then
 			tokens[#tokens+1] = str:sub(previndex)
 			break
@@ -138,7 +142,7 @@ function loadSettings()
 			
 			if value == "true" or value == "false" then
 				value = (value == "true")
-			else
+			elseif tonumber(value) ~= nil then
 				value = tonumber(value)
 			end
 			
