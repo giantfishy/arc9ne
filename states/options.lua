@@ -62,10 +62,6 @@ function Options.new(parent)
 	return self
 end
 
-function Options.reset(self)
-	
-end
-
 drawFunctions.text = function(value, x, y, name)
 	if value == "true" then value = "yes" end
 	if value == "false" then value = "no" end

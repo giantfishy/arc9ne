@@ -77,8 +77,8 @@ function Menu.keypressed(self, key)
 		if key == "space" or key == "return" or key == "kpenter" then
 			local item = self.items[self.selected]
 			if item == "start" then
-				changeState("comic")
-				loadScene("act1/scene1")
+				changeState("charselect")
+				--loadScene("act1/scene1")
 			elseif item == "options" then
 				self.options = Options.new(self)
 				self.menu = "options"
@@ -97,7 +97,7 @@ function Menu.keypressed(self, key)
 		end
 	elseif self.menu == "options" then
 		if key == "escape" then
-			self.options:reset()
+			love.audio.setVolume(getSettings().volume)
 			self.menu = "main"
 			self.selected = 3
 		elseif key == "space" or key == "return" or key == "kpenter" then

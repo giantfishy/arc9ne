@@ -1,6 +1,7 @@
+local Splash = require('states/splash')
 local Menu = require('states/menu')
 local Comic = require('states/comic')
-local Splash = require('states/splash')
+local Charselect = require('states/charselect')
 
 local allStates = {}
 local state = nil
@@ -18,10 +19,12 @@ function love.load()
 	fonts["title"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
 	fonts["selected"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
 	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
+	fonts["small"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 20)
 	
+	allStates["splash"] = Splash.new()
 	allStates["menu"] = Menu.new()
 	allStates["comic"] = Comic.new()
-	allStates["splash"] = Splash.new()
+	allStates["charselect"] = Charselect.new()
 	
 	state = allStates.splash
 	if settings.skipSplash then
@@ -46,6 +49,15 @@ function changeState(stateType)
 	
 	if state == allStates.splash and newState ~= nil then
 		resizeWindow()
+	end
+	
+	if stateType == "comic" then
+		newState = Comic.new()
+		allStates.comic = newState
+		if settings.view3D == true then
+			local w = love.graphics.getWidth()
+			love.window.setMode(w, 3 * w / 8)
+		end
 	end
 	
 	if newState ~= nil then state = newState end
