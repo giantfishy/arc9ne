@@ -11,19 +11,29 @@ acts[2] = {"diana", "mark", "liam"}
 acts[3] = {"hana", "olly", "alex"}
 acts[4] = {"felix", "petra", "scott"}
 
+local color = {"087756", "788CFF", "B43CF0", "FFA03C"}
+
 function Charselect.new()
 	local self = setmetatable({}, Charselect)
 	
 	self.x = 1
 	self.y = 1
 	
+	self.scale = {}
+	for x=1,#acts do
+		self.scale[x] = {}
+		for y=1,#acts[x] do
+			self.scale[x][y] = 0
+		end
+	end
+	
 	self.img = {}
 	for actnum, chars in ipairs(acts) do
 		for i, c in ipairs(chars) do
-			if actnum > 1 then -- or if the character is locked
+			if not unlocked(actnum, c) then -- or if the character is locked
 				c = "locked"
 			end
-			self.img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".png")
+			self.img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
 		end
 	end
 	
@@ -33,23 +43,58 @@ end
 function Charselect.draw(self)
 	local w = love.graphics.getWidth()
 	local h = love.graphics.getHeight()
+	local name = acts[self.x][self.y]
 	
-	g.push()
-	local tile = 130
-	g.translate((w - tile * #acts)/2, (h - tile * #acts[1])/2)
+	local c = parseHex(color[self.x])
+	if not unlocked(self.x, name) then c = {60, 60, 60} end
+	g.setBackgroundColor(lerpColor(c, {0, 0, 0}, 0.5))
 	
-	g.setColor(255, 255, 255, 100)
-	g.ellipse("fill", (self.x-0.5)*tile, (self.y-0.5)*tile, tile/2, tile/2)
+	local incr = 0.1
+	for y = 0, h, incr do
+		g.setColor(lerpColor(c, {0, 0, 0}, 0.3 + y*0.4))
+		g.rectangle("fill", 0, y*h, w, h*incr)
+	end
 	g.setColor(255, 255, 255)
 	
+	setFont("selected")
+	drawText("chapter select", 25, h*incr/2, "left")
+	
+	g.push()
+	local tile = 128
+	g.translate((w - tile * #acts)/2, 30+(h - tile * #acts[1])/2)
+	
 	setFont("small")
-	drawText(acts[self.x][self.y], (self.x-0.5)*tile, #acts[1]*tile + 20, "center")
+	if not unlocked(self.x, name) then name = "???" end
+	drawText(name, (self.x-0.5)*tile, #acts[1]*tile + 20, "center")
 	for x=1,#acts do
 		drawText("ACT "..x, (x-0.5)*tile, -20, "center")
+		
+		local mult = 0.8
+		g.setColor(c)
+		if x ~= self.x then g.setColor(lerpColor(c, {255, 255, 255}, 0.5)) end
+		for i=1, #acts[x] do
+			g.ellipse("fill", (x-0.5)*tile, (i-0.5)*tile, tile*mult/2, tile*mult/2)
+			if i > 1 then
+				g.rectangle("fill", (x-1+(1-mult)/2)*tile, (i-1.5)*tile, tile*mult, tile)
+			end
+		end
+		
 		for y=1,#acts[x] do
 			local img = self.img[acts[x][y]]
-			local padding = (tile - 128) / 2
-			g.draw(img, (x-1)*tile + padding, (y-1)*tile + padding)
+			local alpha = 255
+			if self.x == x then
+				if self.y ~= y then alpha = 160 end
+			else
+				alpha = 80
+			end
+			
+			local scale = mult
+			if self.x == x and self.y == y and unlocked(self.x, name) then scale = 1 end
+			self.scale[x][y] = self.scale[x][y] + 0.4*(scale-self.scale[x][y])
+			
+			g.setColor(255, 255, 255, alpha)
+			g.draw(img, (x-0.5)*tile, (y-0.5)*tile, 0, self.scale[x][y], self.scale[x][y], 64, 64)
+			g.setColor(255, 255, 255)
 		end
 	end
 	g.pop()
@@ -71,6 +116,11 @@ function Charselect.keypressed(self, key)
 	elseif key == "down" and self.y < #acts[1] then
 		self.y = self.y + 1
 	end
+end
+
+function unlocked(actnum, name)
+	if actnum > 1 then return false end
+	return true
 end
 
 return Charselect
