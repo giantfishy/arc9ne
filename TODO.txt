@@ -1,8 +1,0 @@
-arc9ne : TODO
-
-===o===
-
-- fix the options menu (so it resets if you hit esc)
-- make the characters menu
-- make an about page?
-- figure out how to scale images to fit on the screen

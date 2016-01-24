@@ -3,6 +3,8 @@ local Menu = require('states/menu')
 local Comic = require('states/comic')
 local Charselect = require('states/charselect')
 
+require('auxiliary')
+
 local allStates = {}
 local state = nil
 local settings = nil
@@ -54,7 +56,7 @@ function changeState(stateType)
 	if stateType == "comic" then
 		newState = Comic.new()
 		allStates.comic = newState
-		if settings.view3D == true then
+		if settings.view3D == true and settings.fullscreen == false then
 			local w = love.graphics.getWidth()
 			love.window.setMode(w, 3 * w / 8)
 		end
@@ -109,67 +111,6 @@ function drawText(text, x, y, align)
 		x = x - width/2
 	end
 	love.graphics.printf(text, math.floor(x), math.floor(y - height*0.6), love.graphics.getWidth(), "left")
-end
-
-function splitStr(str, split)
-	if split == nil then split = " " end
-	
-	local tokens = {}
-	local index = 1
-	local previndex = 1
-	while index ~= nil do
-		index = str:find(split, index)
-		if index == nil then
-			tokens[#tokens+1] = str:sub(previndex)
-			break
-		end
-		tokens[#tokens+1] = str:sub(previndex, index-1)
-		index = index + 1
-		previndex = index
-	end
-	return tokens
-end
-
-function startsWith(str, start)
-	return (str:sub(1, start:len()) == start)
-end
-
-function parseHex(hex)
-	-- this is quite a mess but i'm likely not going to look at it ever again
-	hex = tostring(hex)
-	if startsWith(hex, "#") then hex = hex:sub(2) end
-	local r = hex:sub(1, 2)
-	local g = hex:sub(3, 4)
-	local b = hex:sub(5, 6)
-	local color = {r, g, b}
-	for i=1,3 do
-		local chan = color[i]
-		local result = 0
-		for j=1,2 do
-			local c = chan:sub(j, j)
-			if tonumber(c) == nil then
-				local index = string.find("ABCDEF", c)
-				if index ~= nil then
-					c = index + 9
-				else
-					c = 0
-				end
-			else
-				c = tonumber(c)
-			end
-			result = result + (c * 16^(2-j))
-		end
-		color[i] = result
-	end
-	return color
-end
-
-function lerpColor(c1, c2, amt)
-	local result = {}
-	for i=1,3 do
-		result[i] = c1[i] + amt*(c2[i] - c1[i])
-	end
-	return result
 end
 
 -- function to load the settings.txt and make a table out of it

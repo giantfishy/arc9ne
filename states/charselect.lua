@@ -61,6 +61,7 @@ function Charselect.draw(self)
 	
 	g.push()
 	local tile = 128
+	if w < 800 then tile = 100 end
 	g.translate((w - tile * #acts)/2, 30+(h - tile * #acts[1])/2)
 	
 	setFont("small")

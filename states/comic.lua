@@ -19,6 +19,14 @@ function Comic.makeCanvases(self)
 	local w = love.graphics.getWidth()
 	local h = love.graphics.getHeight()
 	
+	if self.settings.fullscreen == true then
+		if self.settings.view3D == false then
+			w = 4 * h / 3
+		else
+			h = 3 * w / 8
+		end
+	end
+	
 	self.mainCanvas = love.graphics.newCanvas(w, h)
 	self.lefteye = love.graphics.newCanvas(w/2, h)
 	self.righteye = love.graphics.newCanvas(w/2, h)
@@ -29,6 +37,8 @@ function Comic.load(self, filename)
 end
 
 function Comic.draw(self)
+	local w = love.graphics.getWidth()
+	local h = love.graphics.getHeight()
 	local sc = self.currentscene
 	
 	if self.mainCanvas == nil or self.lefteye == nil or self.righteye == nil then
@@ -42,12 +52,12 @@ function Comic.draw(self)
 			sc:draw(self.lefteye, eyedist/2, smooth)
 			sc:draw(self.righteye, -eyedist/2, smooth)
 			
-			love.graphics.draw(self.righteye, 0, 0)
-			love.graphics.draw(self.lefteye, love.graphics.getWidth()/2, 0)
+			love.graphics.draw(self.righteye, w*0.25, h*0.5, 0, 1, 1, self.righteye:getWidth()/2, self.righteye:getHeight()/2)
+			love.graphics.draw(self.lefteye, w*0.75, h*0.5, 0, 1, 1, self.lefteye:getWidth()/2, self.lefteye:getHeight()/2)
 		else
 			sc:draw(self.mainCanvas, 0, smooth)
 			
-			love.graphics.draw(self.mainCanvas, 0, 0)
+			love.graphics.draw(self.mainCanvas, w*0.5, h*0.5, 0, 1, 1, self.mainCanvas:getWidth()/2, self.mainCanvas:getHeight()/2)
 		end
 	end
 end
