@@ -30,9 +30,6 @@ function Charselect.new()
 	self.img = {}
 	for actnum, chars in ipairs(acts) do
 		for i, c in ipairs(chars) do
-			if not unlocked(actnum, c) then -- or if the character is locked
-				c = "locked"
-			end
 			self.img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
 		end
 	end
@@ -90,10 +87,11 @@ function Charselect.draw(self)
 			end
 			
 			local scale = mult
-			if self.x == x and self.y == y and unlocked(self.x, name) then scale = 1 end
-			self.scale[x][y] = self.scale[x][y] + 0.4*(scale-self.scale[x][y])
+			if self.x == x and self.y == y then scale = 1 end
+			self.scale[x][y] = self.scale[x][y] + 0.5*(scale-self.scale[x][y])
 			
 			g.setColor(255, 255, 255, alpha)
+			if not unlocked(x, acts[x][y]) then g.setColor(0, 0, 0, alpha) end
 			g.draw(img, (x-0.5)*tile, (y-0.5)*tile, 0, self.scale[x][y], self.scale[x][y], 64, 64)
 			g.setColor(255, 255, 255)
 		end

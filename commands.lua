@@ -8,14 +8,16 @@ Commands.parse = function(parent, text)
 	local tokens = splitStr(text)
 	
 	local functionName = tokens[1]
-	local func = Commands[functionName]
+	local t = Commands[functionName] -- table containing the number of expected arguments and the function itself
 	
 	local args = {}
 	for i=2, #tokens do
 		args[i-1] = tokens[i]
 	end
 	
-	local expectedArgs = Commands.args[functionName]
+	local expectedArgs = t[1]
+	local func = t[2]
+	
 	if func == nil or expectedArgs == nil then
 		print("No command \""..functionName.."\"")
 		return
@@ -32,41 +34,44 @@ Commands.parse = function(parent, text)
 	end
 end
 
--- number of arguments expected for each command:
-
-Commands.args = {}
-Commands.args.place = 4
-Commands.args.camera = 2
-Commands.args.load = 1
-Commands.args.pause = 0
-
 -- commands:
+-- (first element of table is the number of expected arguments, second element is the function)
 
-Commands.place = function(parent, args)
+Commands.place = {4, function(parent, args)
 	local img = args[1]
 	local x = tonumber(args[2])
 	local y = tonumber(args[3])
 	local z = tonumber(args[4])
-	parent.sprites[#parent.sprites+1] = Sprite.new(parent.images[img], x, y, z)
+	
+	local sprite = Sprite.new(parent.images[img], x, y, z)
+	if parent.sprites[img] == nil then
+		parent.sprites[img] = sprite
+	else
+		local num = 2
+		while parent.sprites[img..num] ~= nil do
+			num = num + 1
+		end
+		parent.sprites[img..num] = sprite
+	end
 	print("Placed sprite \""..img.."\" at "..x..", "..y..", "..z)
-end
+end}
 
-Commands.camera = function(parent, args)
+Commands.camera = {2, function(parent, args)
 	local x = tonumber(args[1])
 	local y = tonumber(args[2])
 	parent.cam_x = x
 	parent.cam_y = y
 	print(x, y)
 	print("Moved camera to "..x..", "..y)
-end
+end}
 
-Commands.load = function(parent, args)
+Commands.load = {1, function(parent, args)
 	local scene = args[1]
 	loadScene(scene)
-end
+end}
 
-Commands.pause = function(parent, args)
+Commands.pause = {0, function(parent, args)
 	parent.paused = true
-end
+end}
 
 return Commands

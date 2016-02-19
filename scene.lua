@@ -39,7 +39,7 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	g.push()
 	g.translate(-(love.graphics.getWidth() - canvas:getWidth())/2, -(love.graphics.getHeight() - canvas:getHeight())/2)
 	
-	for i, sprite in ipairs(self.sprites) do
+	for name, sprite in pairs(self.sprites) do
 		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth)
 	end
 	

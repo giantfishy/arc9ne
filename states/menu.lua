@@ -106,8 +106,9 @@ function Menu.keypressed(self, key)
 		if key == "space" or key == "return" or key == "kpenter" then
 			local item = self.items[self.selected]
 			if item == "start" then
-				changeState("charselect")
-				--loadScene("act1/scene1")
+				--changeState("charselect")
+				changeState("comic")
+				loadScene("act1/scene1")
 			elseif item == "options" then
 				self.options = Options.new(self)
 				self.menu = "options"
