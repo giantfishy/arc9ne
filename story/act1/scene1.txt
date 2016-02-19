@@ -1,3 +1,4 @@
+bgtest
 /opengameart
 ground
 tree
@@ -7,7 +8,7 @@ cloud
 
 #0
 camera 0 0
-place bg 0 -0.2 0
+place bgtest 0 0 0
 place ground 0 0.6 1
 place tree -0.5 -0.2 0.5
 place tree 0.2 -0.2 0.4

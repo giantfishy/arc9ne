@@ -15,7 +15,8 @@ function Sprite.new(img, x, y, parallax)
 	return self
 end
 
-function Sprite.draw(self, offset_x, offset_y, smooth)
+function Sprite.draw(self, offset_x, offset_y, smooth, scale)
+	if scale == nil then scale = 1 end
 	local coords = getScreenCoords(offset_x, offset_y, self.parallax)
 	local w = self.img:getWidth()
 	local h = self.img:getHeight()
@@ -28,7 +29,7 @@ function Sprite.draw(self, offset_x, offset_y, smooth)
 		draw_y = math.floor(draw_y)
 	end
 	
-	g.draw(self.img, draw_x, draw_y, 0, 1, 1, w/2, h/2)
+	g.draw(self.img, draw_x, draw_y, 0, scale, scale, w/2, h/2)
 end
 
 function getScreenCoords(offset_x, offset_y, parallax)

@@ -34,13 +34,26 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	if eyeoffset == nil then eyeoffset = 0 end
 	if smooth == nil then smooth = true end
 	
+	local scale = canvas:getWidth() / 1600
+	
 	g.setCanvas(canvas)
 	g.clear()
 	g.push()
 	g.translate(-(love.graphics.getWidth() - canvas:getWidth())/2, -(love.graphics.getHeight() - canvas:getHeight())/2)
 	
+	local spr = {}
 	for name, sprite in pairs(self.sprites) do
-		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth)
+		spr[#spr+1] = sprite
+	end
+	
+	-- reorder the array in order of parallax
+	local sortFunction = function(a, b)
+		return a.parallax < b.parallax
+	end
+	table.sort(spr, sortFunction)
+	
+	for i, sprite in ipairs(spr) do
+		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
 	end
 	
 	g.pop()
@@ -163,12 +176,6 @@ function Scene.doKeyframe(self, commands)
 			Commands.parse(self, c)
 		end
 	end
-	
-	-- reorder the self.sprites array in order of parallax
-	local sortFunction = function(a, b)
-		return a.parallax < b.parallax
-	end
-	table.sort(self.sprites, sortFunction)
 	
 	print("\nFinished executing keyframe.")
 end
