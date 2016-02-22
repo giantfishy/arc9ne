@@ -55,6 +55,8 @@ function Charselect.draw(self)
 	
 	setFont("selected")
 	drawText("chapter select", 25, h*incr/2, "left")
+	setFont("small")
+	drawText("chapters within an act can be read in any order", w-25, h*(1-incr/2), "right")
 	
 	g.push()
 	local tile = 128
@@ -106,6 +108,14 @@ end
 function Charselect.keypressed(self, key)
 	if key == "escape" then
 		changeState("menu")
+	elseif key == "space" or key == "return" or key == "kpenter" then
+		local filename = acts[self.x][self.y].."/scene1"
+		if sceneExists(acts[self.x][self.y].."/scene1") then
+			changeState("comic")
+			loadScene(filename)
+		else
+			print(filename..".txt does not exist!")
+		end
 	elseif key == "left" and self.x > 1 then
 		self.x = self.x - 1
 	elseif key == "right" and self.x < #acts then

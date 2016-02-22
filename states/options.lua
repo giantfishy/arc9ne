@@ -127,7 +127,10 @@ function Options.draw(self)
 	end
 	love.graphics.pop()
 	
-	--drawText("esc to cancel, space/enter to save", 20, h-30, "left")
+	setFont("selected")
+	drawText("options", w-30, 30, "right")
+	setFont("small")
+	drawText("space/enter to save, esc to cancel, r to reset to defaults", w-30, h-30, "right")
 end
 
 function Options.increment(self, amount)
@@ -183,6 +186,7 @@ function Options.updateSettings(self)
 	
 	if w ~= self.options.width or h ~= self.options.height then resizeWindow() end
 	love.audio.setVolume(self.options.volume)
+	if self.options.volume ~= 0 then love.audio.resume() end
 end
 
 return Options

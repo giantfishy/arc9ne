@@ -61,7 +61,6 @@ Commands.camera = {2, function(parent, args)
 	local y = tonumber(args[2])
 	parent.cam_x = x
 	parent.cam_y = y
-	print(x, y)
 	print("Moved camera to "..x..", "..y)
 end}
 
@@ -72,6 +71,14 @@ end}
 
 Commands.pause = {0, function(parent, args)
 	parent.paused = true
+end}
+
+Commands.clear = {0, function(parent, args)
+	parent.sprites = {}
+end}
+
+Commands.remove = {1, function(parent, args)
+	parent.sprites[args[1]] = nil
 end}
 
 return Commands

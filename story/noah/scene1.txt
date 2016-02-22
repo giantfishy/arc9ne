@@ -9,27 +9,18 @@ cloud
 #0
 camera 0 0
 place bgtest 0 0 0
-place ground 0 0.6 1
-place tree -0.5 -0.2 0.5
-place tree 0.2 -0.2 0.4
 place rock 0 0.5 0.8
+place rock 0 0.2 0.7
 place cloud 0.2 -0.4 0.2
+place cloud 0.5 -0.5 0.1
+place cloud 0.3 0.2 0.3
 pause
 
-#5
+#1
 camera 0.2 0
+remove rock
 
-#6
-camera 0.2 0
-
-#15
+#2
 camera -1 0
-
-#20
-camera -0.5 0.5
-
-#25
-camera -0.5 -0.5
-
-#30
-camera -1 0
+clear
+place bgtest 0 0 0

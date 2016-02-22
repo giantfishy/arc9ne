@@ -56,6 +56,9 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
 	end
 	
+	-- for some reason i need this line or it won't clear the sprites. what's going on
+	drawText(#spr, -50, -50, "left")
+	
 	g.pop()
 	g.setCanvas()
 end

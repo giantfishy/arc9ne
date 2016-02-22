@@ -81,6 +81,14 @@ function loadScene(filename)
 	end
 end
 
+function sceneExists(filename)
+	local basedir = love.filesystem.getSourceBaseDirectory().."/arc9ne/"
+	if io.open(basedir.."story/"..filename..".txt") == nil then
+		return false
+	end
+	return true
+end
+
 function getSettings()
 	return settings
 end
