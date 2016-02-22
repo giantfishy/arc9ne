@@ -1,6 +1,7 @@
 -- SCENE.LUA - class for loading images and keyframes from a file, and displaying them accordingly
 
 local Keyframe = require('keyframe')
+local Keyframer = require('keyframer')
 local Sprite = require('sprite')
 local Commands = require('commands')
 
@@ -16,6 +17,7 @@ function Scene.new(filename)
 	self.sprites = {}
 	self.keyframes = {}
 	self.cameraKeyframes = {}
+	self.keyframers = {} -- eugh
 	
 	self.time = 0
 	self.keyframe = 0
@@ -34,7 +36,7 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	if eyeoffset == nil then eyeoffset = 0 end
 	if smooth == nil then smooth = true end
 	
-	local scale = canvas:getWidth() / 1600
+	local scale = canvas:getWidth() / 1600 -- 1600x1200 is highest resolution
 	
 	g.setCanvas(canvas)
 	g.clear()
@@ -46,14 +48,15 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		spr[#spr+1] = sprite
 	end
 	
-	-- reorder the array in order of parallax
+	-- reorder the array in order of z value
 	local sortFunction = function(a, b)
-		return a.parallax < b.parallax
+		-- not entirely sure why the tonumber() needs to be there but it does apparently
+		return tonumber(a.z) < tonumber(b.z)
 	end
 	table.sort(spr, sortFunction)
 	
 	for i, sprite in ipairs(spr) do
-		sprite:draw(-self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
+		sprite:draw(canvas, -self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
 	end
 	
 	-- for some reason i need this line or it won't clear the sprites. what's going on
@@ -65,6 +68,10 @@ end
 
 function Scene.update(self, dt)
 	if self.paused == false then self.time = self.time + dt end
+	
+	for name, sprite in pairs(self.sprites) do
+		if sprite.keyframer ~= nil then sprite.keyframer:update(self.time) end
+	end
 	
 	local currentKey = nil
 	local nextKey = nil
@@ -89,7 +96,9 @@ function Scene.update(self, dt)
 	if nextKey ~= nil then
 		if self.time > nextKey.t then
 			self.keyframe = self.keyframe + 1
+			print("== #"..nextKey.t.." ==")
 			self:doKeyframe(nextKey.commands)
+			print("")
 		end
 	else
 		return true -- finished
@@ -136,10 +145,29 @@ function Scene.loadScene(self, filename)
 						-- add key to cameraKeyframes
 						local coords = splitStr(line)
 						local camkey = {}
+						
 						camkey.t = self.keyframes[#self.keyframes].t
 						camkey.x = tonumber(coords[2])
 						camkey.y = tonumber(coords[3])
 						self.cameraKeyframes[#self.cameraKeyframes+1] = camkey
+					elseif startsWith(line, "key ") then
+						local args = splitStr(line:sub(5))
+						local name = args[1]
+						local style = args[5]
+						if style == nil then style = "linear" end
+						
+						local values = {}
+						values.x = args[2]
+						values.y = args[3]
+						values.z = args[4]
+						
+						local keyframer = self.keyframers[name]
+						if keyframer == nil then
+							keyframer = Keyframer.new(nil)
+							self.keyframers[name] = keyframer
+							print("Added keyframer to sprite \""..name.."\"")
+						end
+						keyframer:add(key.t, style, values)
 					end
 					print("Command \""..line.."\" added to key at "..key.t.." seconds!")
 				else
@@ -170,7 +198,6 @@ function Scene.loadImage(self, imagename)
 end
 
 function Scene.doKeyframe(self, commands)
-	print("Executing keyframe...")
 	for i, c in ipairs(commands) do		
 		local tokens = splitStr(c)
 		if c == nil then
@@ -179,8 +206,6 @@ function Scene.doKeyframe(self, commands)
 			Commands.parse(self, c)
 		end
 	end
-	
-	print("\nFinished executing keyframe.")
 end
 
 return Scene

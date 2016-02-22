@@ -10,6 +10,11 @@ Commands.parse = function(parent, text)
 	local functionName = tokens[1]
 	local t = Commands[functionName] -- table containing the number of expected arguments and the function itself
 	
+	if t == nil then
+		print("No command \""..functionName.."\"")
+		return
+	end
+	
 	local args = {}
 	for i=2, #tokens do
 		args[i-1] = tokens[i]
@@ -17,6 +22,11 @@ Commands.parse = function(parent, text)
 	
 	local expectedArgs = t[1]
 	local func = t[2]
+	
+	-- special case
+	if functionName == "key" and #args == 4 then
+		args[5] = "linear"
+	end
 	
 	if func == nil or expectedArgs == nil then
 		print("No command \""..functionName.."\"")
@@ -44,16 +54,23 @@ Commands.place = {4, function(parent, args)
 	local z = tonumber(args[4])
 	
 	local sprite = Sprite.new(parent.images[img], x, y, z)
-	if parent.sprites[img] == nil then
-		parent.sprites[img] = sprite
-	else
+	local id = img
+	if parent.sprites[img] ~= nil then
 		local num = 2
 		while parent.sprites[img..num] ~= nil do
 			num = num + 1
 		end
-		parent.sprites[img..num] = sprite
+		id = img..num
 	end
-	print("Placed sprite \""..img.."\" at "..x..", "..y..", "..z)
+	
+	local keyframer = parent.keyframers[id]
+	if keyframer ~= nil then
+		keyframer.parent = sprite
+		sprite.keyframer = keyframer
+	end
+	
+	parent.sprites[id] = sprite
+	print("Placed sprite \""..id.."\" at "..x..", "..y..", "..z)
 end}
 
 Commands.camera = {2, function(parent, args)
@@ -67,18 +84,30 @@ end}
 Commands.load = {1, function(parent, args)
 	local scene = args[1]
 	loadScene(scene)
+	print("Loaded scene "..args[1])
 end}
 
 Commands.pause = {0, function(parent, args)
 	parent.paused = true
+	print("Paused")
 end}
 
 Commands.clear = {0, function(parent, args)
 	parent.sprites = {}
+	print("Cleared sprites")
 end}
 
 Commands.remove = {1, function(parent, args)
 	parent.sprites[args[1]] = nil
+	print("Removed sprite \""..args[1].."\"")
+end}
+
+Commands.key = {5, function(parent, args)
+	local sprite = parent.sprites[args[1]]
+	sprite.x = args[2]
+	sprite.y = args[3]
+	sprite.z = args[4]
+	print("Moved sprite \""..args[1].."\" to "..args[2]..", "..args[3]..", "..args[4])
 end}
 
 return Commands

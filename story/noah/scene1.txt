@@ -19,8 +19,8 @@ pause
 #1
 camera 0.2 0
 remove rock
+key bgtest 0 0 0
 
-#2
+#3
 camera -1 0
-clear
-place bgtest 0 0 0
+key bgtest 0 1 0 linear
