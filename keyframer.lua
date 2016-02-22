@@ -17,8 +17,8 @@ function Keyframer.add(self, t, style, values)
 	keyframe.t = t
 	keyframe.style = style
 	keyframe.values = values
-	self.data[#self.data+1] = keyframe
 	
+	self.data[#self.data+1] = keyframe
 end
 
 local styles = {}
@@ -50,6 +50,7 @@ function Keyframer.update(self, t)
 			for i = index+1, #self.data do
 				if self.data[i].values[key] ~= nil then
 					to = self.data[i]
+					break
 				end
 			end
 			

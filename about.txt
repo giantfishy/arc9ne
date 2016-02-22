@@ -1,7 +1,7 @@
-arc9ne is a digital comic/cartoon/thing. i'm not really sure what to call it yet.
+arc9ne is pretty much a visual novel.
 
 its main purpose revolves around the concept that if i actually finish it (which, if you're reading this, i did!), i'll know that i can theoretically actually make things, and i might be able to think about working on bigger projects with more confidence.
-because of this, "make a perfect story that everybody will like" isn't high up on my priority list, but i hope you'll like it anyway. either way, i'm always appreciative of any feedback you might have. the best way to contact me is probably @phijinks on twitter.
+because of this, i've strived to let go of the idea that it has to be good (better a lame finished product than nothing at all!), but hopefully you'll like it anyway. either way, i'm always appreciative of any feedback you might have. the best way to contact me is probably @phijinks on twitter.
 
 most of the stuff in here is made by me, which is a problem because i'm not really a writer, artist, programmer or musician, let alone all four at once. working on that though. below is a list of the tools i used.
 
@@ -9,4 +9,4 @@ code: notepad++, lua, love2d
 visuals: paint tool sai, paint.net, processing
 music: fl studio
 
-thanks for checking this out, by the way!
+fonts used: caviar dreams by lauren thompson

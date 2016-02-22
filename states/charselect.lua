@@ -11,7 +11,9 @@ acts[2] = {"diana", "mark", "liam"}
 acts[3] = {"hana", "olly", "alex"}
 acts[4] = {"felix", "petra", "scott"}
 
-local color = {"087756", "788CFF", "B43CF0", "FFA03C"}
+local unlocked = {}
+
+local color = {"087756", "FFA03C", "B43CF0", "788CFF"}
 
 function Charselect.new()
 	local self = setmetatable({}, Charselect)
@@ -31,6 +33,10 @@ function Charselect.new()
 	for actnum, chars in ipairs(acts) do
 		for i, c in ipairs(chars) do
 			self.img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
+			
+			if sceneExists(chars[i].."/scene1") then
+				unlocked[chars[i]] = true
+			end
 		end
 	end
 	
@@ -43,7 +49,7 @@ function Charselect.draw(self)
 	local name = acts[self.x][self.y]
 	
 	local c = parseHex(color[self.x])
-	if not unlocked(self.x, name) then c = {60, 60, 60} end
+	if not unlocked[name] then c = {60, 60, 60} end
 	g.setBackgroundColor(lerpColor(c, {0, 0, 0}, 0.5))
 	
 	local incr = 0.1
@@ -60,14 +66,14 @@ function Charselect.draw(self)
 	
 	g.push()
 	local tile = 128
-	if w < 800 then tile = 100 end
+	if w < 800 then tile = 80 end
 	g.translate((w - tile * #acts)/2, 30+(h - tile * #acts[1])/2)
 	
 	setFont("small")
-	if not unlocked(self.x, name) then name = "???" end
-	drawText(name, (self.x-0.5)*tile, #acts[1]*tile + 20, "center")
+	if not unlocked[name] then name = "???" end
+	drawText(name, (self.x-0.5)*tile, -2, "center")--#acts[1]*tile + 20, "center")
 	for x=1,#acts do
-		drawText("ACT "..x, (x-0.5)*tile, -20, "center")
+		drawText("ACT "..x, (x-0.5)*tile, -32, "center")
 		
 		local mult = 0.8
 		g.setColor(c)
@@ -93,8 +99,9 @@ function Charselect.draw(self)
 			self.scale[x][y] = self.scale[x][y] + 0.5*(scale-self.scale[x][y])
 			
 			g.setColor(255, 255, 255, alpha)
-			if not unlocked(x, acts[x][y]) then g.setColor(0, 0, 0, alpha) end
-			g.draw(img, (x-0.5)*tile, (y-0.5)*tile, 0, self.scale[x][y], self.scale[x][y], 64, 64)
+			if not unlocked[acts[x][y]] then g.setColor(0, 0, 0, alpha) end
+			scale = self.scale[x][y] * tile / 128 -- awwww yeah. reusing variables. disgusting
+			g.draw(img, (x-0.5)*tile, (y-0.5)*tile, 0, scale, scale, 64, 64)
 			g.setColor(255, 255, 255)
 		end
 	end
@@ -110,11 +117,11 @@ function Charselect.keypressed(self, key)
 		changeState("menu")
 	elseif key == "space" or key == "return" or key == "kpenter" then
 		local filename = acts[self.x][self.y].."/scene1"
-		if sceneExists(acts[self.x][self.y].."/scene1") then
+		if unlocked[acts[self.x][self.y]] then
 			changeState("comic")
 			loadScene(filename)
 		else
-			print(filename..".txt does not exist!")
+			self.scale[self.x][self.y] = 0.6
 		end
 	elseif key == "left" and self.x > 1 then
 		self.x = self.x - 1
@@ -125,11 +132,6 @@ function Charselect.keypressed(self, key)
 	elseif key == "down" and self.y < #acts[1] then
 		self.y = self.y + 1
 	end
-end
-
-function unlocked(actnum, name)
-	if actnum > 1 then return false end
-	return true
 end
 
 return Charselect

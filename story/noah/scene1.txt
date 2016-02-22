@@ -21,6 +21,9 @@ camera 0.2 0
 remove rock
 key bgtest 0 0 0
 
+#2
+key bgtest 0.2 0.5 0 linear
+
 #3
 camera -1 0
 key bgtest 0 1 0 linear

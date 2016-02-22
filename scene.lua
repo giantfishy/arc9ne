@@ -169,7 +169,7 @@ function Scene.loadScene(self, filename)
 						end
 						keyframer:add(key.t, style, values)
 					end
-					print("Command \""..line.."\" added to key at "..key.t.." seconds!")
+					print("Command \""..line.."\" added at "..key.t.." seconds!")
 				else
 					print("No keys yet, cannot add command \""..line.."\"!")
 				end
