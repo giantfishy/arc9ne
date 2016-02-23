@@ -34,6 +34,12 @@ function Sprite.draw(self, canvas, offset_x, offset_y, smooth, scale)
 	g.draw(self.img, draw_x, draw_y, 0, scale, scale, w/2, h/2)
 end
 
+function Sprite.move(self, x, y, z)
+	self.x = x
+	self.y = y
+	self.z = z
+end
+
 function getScreenCoords(canvas, offset_x, offset_y, z)
 	local screenx = (1 + z*offset_x) / 2
 	local screeny = (1 + z*offset_y) / 2

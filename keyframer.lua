@@ -8,6 +8,7 @@ function Keyframer.new(parent)
 	
 	self.parent = parent
 	self.data = {} -- array of all the keyframes
+	self.variables = {} -- array of all variables which this keyframer is responsible for
 	
 	return self
 end
@@ -17,6 +18,10 @@ function Keyframer.add(self, t, style, values)
 	keyframe.t = t
 	keyframe.style = style
 	keyframe.values = values
+	
+	for key, value in pairs(values) do
+		self.variables[key] = true
+	end
 	
 	self.data[#self.data+1] = keyframe
 end
@@ -28,27 +33,38 @@ end
 styles.instant = function(from, to, amt)
 	return from
 end
+styles.cubic = function(from, to, amt)
+	local y = 0.5 + (math.pow(math.abs(amt - 0.5), (1/3)) / (2*math.pow(0.5, (1/3))))
+	if amt < 0.5 then y = 1 - y end
+	return from + y*(to - from)
+end
+styles.ease = function(from, to, amt)
+	local sharpness = 10
+	local endpoint = math.pow(0.5, sharpness)
+	local y = 1 - (math.pow(0.5, amt*sharpness) - amt*endpoint)
+	return from + y*(to - from)
+end
 
 function Keyframer.update(self, t)
 	if self.parent == nil then return end
 	
-	local from = nil -- the current previous keyframe
-	local index = nil -- current index
-	
-	-- find current previous keyframe
-	for i, key in ipairs(self.data) do
-		if key.t <= t then
-			from = key
-			index = i
+	for var, bool in pairs(self.variables) do
+		local from = nil -- start keyframe
+		local index = nil -- index of start keyframe
+		
+		-- find last keyframe which has that variable
+		for i, key in ipairs(self.data) do
+			if key.t <= t and key.values[var] ~= nil then
+				from = key
+				index = i
+			end
 		end
-	end
-	
-	if from ~= nil then
-		for key, value in pairs(from.values) do
+		
+		if from ~= nil then
 			-- find next keyframe with a value for that key
 			local to = nil
 			for i = index+1, #self.data do
-				if self.data[i].values[key] ~= nil then
+				if self.data[i].values[var] ~= nil then
 					to = self.data[i]
 					break
 				end
@@ -59,7 +75,7 @@ function Keyframer.update(self, t)
 				local amt = (t - from.t) / (to.t - from.t)
 				
 				if func == nil then func = styles.linear end
-				self.parent[key] = func(value, to.values[key], amt)
+				self.parent[var] = func(from.values[var], to.values[var], amt)
 			end
 		end
 	end

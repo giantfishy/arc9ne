@@ -16,8 +16,9 @@ function Scene.new(filename)
 	self.images = {}
 	self.sprites = {}
 	self.keyframes = {}
-	self.cameraKeyframes = {}
+	
 	self.keyframers = {} -- eugh
+	self.keyframer = Keyframer.new(self)
 	
 	self.time = 0
 	self.keyframe = 0
@@ -69,27 +70,10 @@ end
 function Scene.update(self, dt)
 	if self.paused == false then self.time = self.time + dt end
 	
+	-- update keyframers
+	self.keyframer:update(self.time)
 	for name, sprite in pairs(self.sprites) do
 		if sprite.keyframer ~= nil then sprite.keyframer:update(self.time) end
-	end
-	
-	local currentKey = nil
-	local nextKey = nil
-	for i=1,#self.cameraKeyframes do
-		if self.cameraKeyframes[i].t > self.time then
-			currentKey = self.cameraKeyframes[i-1]
-			nextKey = self.cameraKeyframes[i]
-			break
-		end
-	end
-	
-	if nextKey ~= nil then
-		if currentKey == nil then currentKey = {t=0, x=nextKey.x, y=nextKey.y} end -- if there's no keyframe at t=0
-		
-		local panTime = (nextKey.t - currentKey.t) -- time taken to move the camera
-		local percent = 1 - ((nextKey.t - self.time) / panTime)
-		self.cam_x = currentKey.x + percent*(nextKey.x - currentKey.x)
-		self.cam_y = currentKey.y + percent*(nextKey.y - currentKey.y)
 	end
 	
 	nextKey = self:getNextKeyframe()
@@ -121,6 +105,7 @@ function Scene.loadScene(self, filename)
 	local dir = ""
 	
 	for line in io.lines(filename) do
+		line = line:gsub("\r\n?", "")
 		if line:len() == 0 then
 			loadingAssets = false
 			print()
@@ -142,24 +127,15 @@ function Scene.loadScene(self, filename)
 				if key ~= nil then
 					key:addCommand(line)
 					if startsWith(line, "camera ") then
-						-- add key to cameraKeyframes
-						local coords = splitStr(line)
-						local camkey = {}
+						line = line:gsub("camera ", "")
+						local data = parseKeyframer(splitStr(line))
 						
-						camkey.t = self.keyframes[#self.keyframes].t
-						camkey.x = tonumber(coords[2])
-						camkey.y = tonumber(coords[3])
-						self.cameraKeyframes[#self.cameraKeyframes+1] = camkey
+						self.keyframer:add(key.t, data[1], data[2])
 					elseif startsWith(line, "key ") then
-						local args = splitStr(line:sub(5))
+						line = line:gsub("key ", "")
+						local args = splitStr(line)
 						local name = args[1]
-						local style = args[5]
-						if style == nil then style = "linear" end
-						
-						local values = {}
-						values.x = args[2]
-						values.y = args[3]
-						values.z = args[4]
+						line = line:gsub(name.." ", "")
 						
 						local keyframer = self.keyframers[name]
 						if keyframer == nil then
@@ -167,7 +143,9 @@ function Scene.loadScene(self, filename)
 							self.keyframers[name] = keyframer
 							print("Added keyframer to sprite \""..name.."\"")
 						end
-						keyframer:add(key.t, style, values)
+						
+						local data = parseKeyframer(splitStr(line))
+						keyframer:add(key.t, data[1], data[2])
 					end
 					print("Command \""..line.."\" added at "..key.t.." seconds!")
 				else
@@ -177,6 +155,21 @@ function Scene.loadScene(self, filename)
 		end
 	end
 	print("\nFinished reading scene file \""..filename.."\"!\n")
+end
+
+function parseKeyframer(args)
+	local style = "linear" -- default value
+	local values = {}
+	for i, arg in ipairs(args) do
+		if arg:find("=") == nil then -- not a variable but (hopefully!) the easing style
+			style = arg
+		else
+			local data = splitStr(arg, "=")
+			values[data[1]] = data[2]
+		end
+	end
+	
+	return {style, values}
 end
 
 function Scene.loadImage(self, imagename)

@@ -23,10 +23,8 @@ Commands.parse = function(parent, text)
 	local expectedArgs = t[1]
 	local func = t[2]
 	
-	-- special case
-	if functionName == "key" and #args == 4 then
-		args[5] = "linear"
-	end
+	-- if expectedArgs is nil, it can take any number of arguments
+	if expectedArgs == nil then expectedArgs = #args end
 	
 	if func == nil or expectedArgs == nil then
 		print("No command \""..functionName.."\"")
@@ -73,9 +71,23 @@ Commands.place = {4, function(parent, args)
 	print("Placed sprite \""..id.."\" at "..x..", "..y..", "..z)
 end}
 
-Commands.camera = {2, function(parent, args)
-	local x = tonumber(args[1])
-	local y = tonumber(args[2])
+Commands.camera = {nil, function(parent, args)
+	local x = nil
+	local y = nil
+	for i, arg in ipairs(args) do
+		if arg:find("=") ~= nil then
+			local data = splitStr(arg, "=")
+			if data[1] == "cam_x" then
+				x = data[2]
+			elseif data[1] == "cam_y" then
+				y = data[2]
+			end
+		end
+	end
+	
+	if x == nil then x = parent.cam_x end
+	if y == nil then y = parent.cam_y end
+	
 	parent.cam_x = x
 	parent.cam_y = y
 	print("Moved camera to "..x..", "..y)
@@ -102,12 +114,23 @@ Commands.remove = {1, function(parent, args)
 	print("Removed sprite \""..args[1].."\"")
 end}
 
-Commands.key = {5, function(parent, args)
+Commands.key = {nil, function(parent, args)
 	local sprite = parent.sprites[args[1]]
-	sprite.x = args[2]
-	sprite.y = args[3]
-	sprite.z = args[4]
-	print("Moved sprite \""..args[1].."\" to "..args[2]..", "..args[3]..", "..args[4])
+	local values = {}
+	for i, arg in ipairs(args) do
+		if arg:find("=") ~= nil then
+			local data = splitStr(arg, "=")
+			values[data[1]] = data[2]
+		end
+	end
+	
+	if values.x == nil then values.x = sprite.x end
+	if values.y == nil then values.y = sprite.y end
+	if values.z == nil then values.z = sprite.z end
+	
+	sprite:move(values.x, values.y, values.z)
+	
+	print("Moved sprite \""..args[1].."\" to "..values.x..", "..values.y..", "..values.z)
 end}
 
 return Commands

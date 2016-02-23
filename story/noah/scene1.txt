@@ -7,7 +7,7 @@ bg
 cloud
 
 #0
-camera 0 0
+camera cam_x=0
 place bgtest 0 0 0
 place rock 0 0.5 0.8
 place rock 0 0.2 0.7
@@ -17,13 +17,13 @@ place cloud 0.3 0.2 0.3
 pause
 
 #1
-camera 0.2 0
-remove rock
-key bgtest 0 0 0
-
-#2
-key bgtest 0.2 0.5 0 linear
+camera cam_x=0.2
 
 #3
-camera -1 0
-key bgtest 0 1 0 linear
+camera cam_x=-1 ease
+
+#4
+key rock2 x=0 y=0.2
+
+#6
+key rock2 x=-1 y=0 ease

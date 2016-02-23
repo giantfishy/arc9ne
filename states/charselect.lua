@@ -71,7 +71,7 @@ function Charselect.draw(self)
 	
 	setFont("small")
 	if not unlocked[name] then name = "???" end
-	drawText(name, (self.x-0.5)*tile, -2, "center")--#acts[1]*tile + 20, "center")
+	drawText(name, (self.x-0.5)*tile, -2, "center")
 	for x=1,#acts do
 		drawText("ACT "..x, (x-0.5)*tile, -32, "center")
 		
