@@ -14,13 +14,14 @@ local basedir = love.filesystem.getSourceBaseDirectory().."/arc9ne/"
 function Scene.new(filename)
 	local self = setmetatable({}, Scene)
 	self.images = {}
+	self.audio = {}
 	self.sprites = {}
 	self.keyframes = {}
 	
 	self.keyframers = {} -- eugh
 	self.keyframer = Keyframer.new(self)
 	
-	self.time = 0
+	self.time = -0.1
 	self.keyframe = 0
 	self.paused = false
 	
@@ -115,7 +116,11 @@ function Scene.loadScene(self, filename)
 			if startsWith(line, "/") then
 				dir = line:sub(2).."/"
 			else
-				self:loadImage(dir..line)
+				if line:find(".ogg") == nil then -- it's an image
+					self:loadImage(dir..line)
+				else -- it's a sound file
+					self:loadAudio(dir..line)
+				end
 			end
 		else
 			if startsWith(line, "#") then -- this line is the start of a keyframe definition
@@ -188,6 +193,27 @@ function Scene.loadImage(self, imagename)
 	self.images[key] = img
 	
 	print("Loaded image "..imagename..".png as '"..key.."'")
+end
+
+function Scene.loadAudio(self, filename)
+	local src = love.audio.newSource(filename)
+	local path = splitStr(filename:gsub(".ogg", ""), "/")
+	if src ~= nil then
+		self.audio[path[#path]] = src
+		print("Loaded audio \""..path[#path].."\"")
+	else
+		print("Could not find \""..filename.."\"")
+	end
+end
+
+function Scene.playAudio(self, name)
+	local src = self.audio[name]
+	if src == nil then
+		print("Could not play audio file \""..name.."\"")
+		return
+	end
+	src:play()
+	print("Started playing audio file \""..name.."\"")
 end
 
 function Scene.doKeyframe(self, commands)

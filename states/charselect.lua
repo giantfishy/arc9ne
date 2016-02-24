@@ -67,17 +67,17 @@ function Charselect.draw(self)
 	g.push()
 	local tile = 128
 	if w < 800 then tile = 80 end
-	g.translate((w - tile * #acts)/2, 30+(h - tile * #acts[1])/2)
+	g.translate((w - tile * #acts)/2, 40+(h - tile * #acts[1])/2)
 	
 	setFont("small")
 	if not unlocked[name] then name = "???" end
-	drawText(name, (self.x-0.5)*tile, -2, "center")
+	drawText(name, (self.x-0.5)*tile, -10, "center")
 	for x=1,#acts do
-		drawText("ACT "..x, (x-0.5)*tile, -32, "center")
+		drawText("ACT "..x, (x-0.5)*tile, -40, "center")
 		
 		local mult = 0.8
 		g.setColor(c)
-		if x ~= self.x then g.setColor(lerpColor(c, {255, 255, 255}, 0.5)) end
+		if x ~= self.x then g.setColor(lerpColor(c, {0, 0, 0}, 0.3)) end
 		for i=1, #acts[x] do
 			g.ellipse("fill", (x-0.5)*tile, (i-0.5)*tile, tile*mult/2, tile*mult/2)
 			if i > 1 then

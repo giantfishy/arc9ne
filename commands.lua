@@ -104,6 +104,10 @@ Commands.pause = {0, function(parent, args)
 	print("Paused")
 end}
 
+Commands.play = {1, function(parent, args)
+	parent:playAudio(args[1])
+end}
+
 Commands.clear = {0, function(parent, args)
 	parent.sprites = {}
 	print("Cleared sprites")

@@ -5,6 +5,8 @@ tree
 rock
 bg
 cloud
+/sound/noah
+intro.ogg
 
 #0
 camera cam_x=0
@@ -14,7 +16,7 @@ place rock 0 0.2 0.7
 place cloud 0.2 -0.4 0.2
 place cloud 0.5 -0.5 0.1
 place cloud 0.3 0.2 0.3
-pause
+play intro
 
 #1
 camera cam_x=0.2
@@ -27,3 +29,9 @@ key rock2 x=0 y=0.2
 
 #6
 key rock2 x=-1 y=0 ease
+
+#8
+remove rock
+
+#16
+place rock 0 0 0.1

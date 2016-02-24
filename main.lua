@@ -17,6 +17,8 @@ function love.load()
 	love.audio.setVolume(tonumber(settings.volume))
 	audio["menu"] = love.audio.newSource("sound/menu.ogg")
 	audio["menu"]:setLooping(true)
+	audio["charselect"] = love.audio.newSource("sound/charselect.ogg")
+	audio["charselect"]:setLooping(true)
 	
 	fonts["title"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
 	fonts["selected"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
@@ -62,12 +64,24 @@ function changeState(stateType)
 		end
 	end
 	
+	if (stateType == "charselect" and state == allStates.menu) then
+		audio["menu"]:pause()
+		audio["charselect"]:play()
+		audio["charselect"]:seek(audio["menu"]:tell())
+	elseif (stateType == "menu" and state == allStates.charselect) then
+		audio["charselect"]:pause()
+		audio["menu"]:play()
+		audio["menu"]:seek(audio["charselect"]:tell())
+	else
+		love.audio.stop()
+	end
+	
+	local src = audio[stateType]
+	if src ~= nil then src:play() end
+	if settings.volume == 0 then love.audio.pause() end
+	
 	if newState ~= nil then state = newState end
 	if state == allStates.comic then state:makeCanvases() end
-	
-	love.audio.stop()
-	if audio[stateType] ~= nil then audio[stateType]:play() end
-	if settings.volume == 0 then love.audio.pause() end
 end
 
 function resizeWindow()
