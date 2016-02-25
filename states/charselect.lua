@@ -108,7 +108,7 @@ function Charselect.draw(self)
 	g.pop()
 end
 
-function Charselect.update(dt)
+function Charselect.update(self, dt)
 	
 end
 

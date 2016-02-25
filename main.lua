@@ -1,7 +1,7 @@
-local Splash = require('states/splash')
-local Menu = require('states/menu')
-local Comic = require('states/comic')
-local Charselect = require('states/charselect')
+Splash = require('states/splash')
+Menu = require('states/menu')
+Comic = require('states/comic')
+Charselect = require('states/charselect')
 
 require('auxiliary')
 
@@ -13,22 +13,29 @@ local audio = {}
 
 function love.load()
 	settings = loadSettings()
+	local stateNames = {"splash", "menu", "charselect", "comic"}
 	
 	love.audio.setVolume(tonumber(settings.volume))
-	audio["menu"] = love.audio.newSource("sound/menu.ogg")
-	audio["menu"]:setLooping(true)
-	audio["charselect"] = love.audio.newSource("sound/charselect.ogg")
-	audio["charselect"]:setLooping(true)
+	for i, name in ipairs({"menu", "charselect"}) do
+		local src = love.audio.newSource("sound/"..name..".ogg")
+		src:setLooping(true)
+		
+		local data = {}
+		data.src = src
+		data.vol = 2 - i -- menu volume = 1, charselect volume = 0
+		data.dvol = 0 -- speed of change of volume
+		audio[name] = data
+	end
 	
 	fonts["title"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 60)
 	fonts["selected"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
 	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	fonts["small"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 20)
 	
-	allStates["splash"] = Splash.new()
-	allStates["menu"] = Menu.new()
-	allStates["comic"] = Comic.new()
-	allStates["charselect"] = Charselect.new()
+	for i, name in ipairs(stateNames) do
+		local cl = name:sub(1, 1):upper()..name:sub(2) -- capitalise first letter
+		allStates[name] = _G[cl].new()
+	end
 	
 	state = allStates.splash
 	if settings.skipSplash then
@@ -41,6 +48,14 @@ function love.draw()
 end
 
 function love.update(dt)
+	for name, data in pairs(audio) do
+		data.vol = data.vol + data.dvol*dt
+		if data.vol > 1 then data.vol = 1 end
+		if data.vol < 0 then data.vol = 0 end
+		
+		data.src:setVolume(data.vol)
+	end
+	
 	state:update(dt)
 end
 
@@ -64,21 +79,28 @@ function changeState(stateType)
 		end
 	end
 	
+	local crossfadeTime = 0.3
+	local spd = 1/crossfadeTime
+	if stateType == "menu" then
+		audio.menu.src:play()
+		audio.charselect.src:play()
+	end
 	if (stateType == "charselect" and state == allStates.menu) then
-		audio["menu"]:pause()
-		audio["charselect"]:play()
-		audio["charselect"]:seek(audio["menu"]:tell())
+		audio.menu.dvol = -spd
+		audio.charselect.dvol = spd
 	elseif (stateType == "menu" and state == allStates.charselect) then
-		audio["charselect"]:pause()
-		audio["menu"]:play()
-		audio["menu"]:seek(audio["charselect"]:tell())
-	else
-		love.audio.stop()
+		audio.menu.dvol = spd
+		audio.charselect.dvol = -spd
+	elseif stateType == "comic" then
+		audio.charselect.vol = 0.5
+		audio.charselect.dvol = -0.2
 	end
 	
-	local src = audio[stateType]
-	if src ~= nil then src:play() end
-	if settings.volume == 0 then love.audio.pause() end
+	if audio[stateType] ~= nil then
+		local src = audio[stateType].src
+		if src ~= nil then src:play() end
+		if settings.volume == 0 then love.audio.pause() end
+	end
 	
 	if newState ~= nil then state = newState end
 	if state == allStates.comic then state:makeCanvases() end
@@ -152,6 +174,7 @@ function loadSettings()
 	
 	local settingsFile = fs.newFile("settings.txt", "r")
 	for line in settingsFile:lines() do
+		line = line:gsub("\r\n?", "")
 		local split = line:find("=")
 		if split then
 			local key = line:sub(1, split-1)
