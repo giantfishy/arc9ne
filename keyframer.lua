@@ -24,6 +24,9 @@ function Keyframer.add(self, t, style, values)
 	end
 	
 	self.data[#self.data+1] = keyframe
+	
+	-- make sure keyframes are in order
+	table.sort(self.data, function(a, b) return a.t < b.t end)
 end
 
 local styles = {}

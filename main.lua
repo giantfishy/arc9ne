@@ -93,7 +93,7 @@ function changeState(stateType)
 		audio.charselect.dvol = -spd
 	elseif stateType == "comic" then
 		audio.charselect.vol = 0.5
-		audio.charselect.dvol = -0.2
+		audio.charselect.dvol = -0.3
 	end
 	
 	if audio[stateType] ~= nil then

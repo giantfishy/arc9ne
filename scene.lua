@@ -43,7 +43,6 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	g.setCanvas(canvas)
 	g.clear()
 	g.push()
-	g.translate(-(love.graphics.getWidth() - canvas:getWidth())/2, -(love.graphics.getHeight() - canvas:getHeight())/2)
 	
 	local spr = {}
 	for name, sprite in pairs(self.sprites) do
@@ -74,6 +73,7 @@ function Scene.update(self, dt)
 	-- update keyframers
 	self.keyframer:update(self.time)
 	for name, sprite in pairs(self.sprites) do
+		sprite:update(dt)
 		if sprite.keyframer ~= nil then sprite.keyframer:update(self.time) end
 	end
 	
@@ -117,7 +117,17 @@ function Scene.loadScene(self, filename)
 				dir = line:sub(2).."/"
 			else
 				if line:find(".ogg") == nil then -- it's an image
-					self:loadImage(dir..line)
+					local split = line:find("|")
+					if split == nil then
+						self:loadImage(dir..line)
+					else
+						local data = splitStr(line:sub(split+1), "x")
+						line = line:sub(1, split-1)
+						self:loadImage(dir..line, data[1], data[2], data[3])
+					end
+					
+					local keyframer = Keyframer.new(nil)
+					self.keyframers[line] = keyframer
 				else -- it's a sound file
 					self:loadAudio(dir..line)
 				end
@@ -143,12 +153,6 @@ function Scene.loadScene(self, filename)
 						line = line:gsub(name.." ", "")
 						
 						local keyframer = self.keyframers[name]
-						if keyframer == nil then
-							keyframer = Keyframer.new(nil)
-							self.keyframers[name] = keyframer
-							print("Added keyframer to sprite \""..name.."\"")
-						end
-						
 						local data = parseKeyframer(splitStr(line))
 						keyframer:add(key.t, data[1], data[2])
 					end
@@ -177,8 +181,10 @@ function parseKeyframer(args)
 	return {style, values}
 end
 
-function Scene.loadImage(self, imagename)
+function Scene.loadImage(self, imagename, dimx, dimy, anim)
 	local img = g.newImage("assets/"..imagename..".png")
+	if dimx == nil then dimx = 1 end
+	if dimy == nil then dimy = 1 end
 	
 	local key = imagename -- where to put the image in self.images
 	if key:find("/") ~= nil then
@@ -190,9 +196,17 @@ function Scene.loadImage(self, imagename)
 		key = key..num
 	end
 	
-	self.images[key] = img
+	local data = {}
+	data.img = img
+	data.dimx = dimx
+	data.dimy = dimy
+	data.animate = anim
 	
-	print("Loaded image "..imagename..".png as '"..key.."'")
+	self.images[key] = data
+	
+	local brackets = " ("..dimx.."x"..dimy..")"
+	if dimx == 1 and dimy == 1 then brackets = "" end
+	print("Loaded image "..imagename..".png as '"..key.."'"..brackets)
 end
 
 function Scene.loadAudio(self, filename)

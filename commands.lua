@@ -51,7 +51,9 @@ Commands.place = {4, function(parent, args)
 	local y = tonumber(args[3])
 	local z = tonumber(args[4])
 	
-	local sprite = Sprite.new(parent.images[img], x, y, z)
+	local data = parent.images[img]
+	local sprite = Sprite.new(data.img, x, y, z, data.dimx, data.dimy)
+	if data.animate ~= nil then sprite.animate = data.animate end
 	local id = img
 	if parent.sprites[img] ~= nil then
 		local num = 2
@@ -64,6 +66,15 @@ Commands.place = {4, function(parent, args)
 	local keyframer = parent.keyframers[id]
 	if keyframer ~= nil then
 		keyframer.parent = sprite
+		
+		local values = {}
+		for key, value in pairs(sprite) do
+			if key ~= "keyframer" then
+				values[key] = value
+			end
+		end
+		keyframer:add(0, "instant", values)
+		
 		sprite.keyframer = keyframer
 	end
 	
@@ -118,6 +129,16 @@ Commands.remove = {1, function(parent, args)
 	print("Removed sprite \""..args[1].."\"")
 end}
 
+Commands.replace = {2, function(parent, args)
+	local sprite = parent.sprites[args[1]]
+	local img = parent.images[args[2]]
+	
+	for key, value in pairs(img) do
+		sprite[key] = value
+	end
+	print("Replaced sprite \""..args[1].."\" with \""..args[2].."\"")
+end}
+
 Commands.key = {nil, function(parent, args)
 	local sprite = parent.sprites[args[1]]
 	local values = {}
@@ -132,7 +153,11 @@ Commands.key = {nil, function(parent, args)
 	if values.y == nil then values.y = sprite.y end
 	if values.z == nil then values.z = sprite.z end
 	
-	sprite:move(values.x, values.y, values.z)
+	for key, value in pairs(values) do
+		if value ~= nil then sprite[key] = value end
+	end
+	
+	--sprite:move(values.x, values.y, values.z)
 	
 	print("Moved sprite \""..args[1].."\" to "..values.x..", "..values.y..", "..values.z)
 end}
