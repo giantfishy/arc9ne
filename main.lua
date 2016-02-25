@@ -73,7 +73,7 @@ function changeState(stateType)
 	if stateType == "comic" then
 		newState = Comic.new()
 		allStates.comic = newState
-		if settings.view3D == true and settings.fullscreen == false then
+		if settings.view3D ~= "off" and settings.fullscreen == false then
 			local w = love.graphics.getWidth()
 			love.window.setMode(w, 3 * w / 8)
 		end

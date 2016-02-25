@@ -1,7 +1,6 @@
 resolution=800x600
 fullscreen=false
-skipSplash=false
-view3D=false
-eyeDistance=0.1
-smoothMovement=true
 volume=0.6
+skipSplash=false
+view3D=off
+eyeDistance=0.1

@@ -1,0 +1,18 @@
+/test
+bg
+/opengameart
+tree
+ground
+
+#0
+place bg 0 0 0
+place tree 0 0 1
+place ground 0 0.8 0.5
+
+#10
+key tree z=1 scale=1
+key ground z=0.5 scale=1
+
+#15
+key tree z=5 scale=3
+key ground z=2.5 scale=1.5

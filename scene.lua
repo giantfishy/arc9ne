@@ -68,7 +68,9 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 end
 
 function Scene.update(self, dt)
-	if self.paused == false then self.time = self.time + dt end
+	if not self.paused then
+		self.time = self.time + dt
+	end
 	
 	-- update keyframers
 	self.keyframer:update(self.time)

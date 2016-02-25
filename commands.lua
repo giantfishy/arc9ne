@@ -107,6 +107,7 @@ end}
 Commands.load = {1, function(parent, args)
 	local scene = args[1]
 	loadScene(scene)
+	love.audio.stop()
 	print("Loaded scene "..args[1])
 end}
 
@@ -156,8 +157,6 @@ Commands.key = {nil, function(parent, args)
 	for key, value in pairs(values) do
 		if value ~= nil then sprite[key] = value end
 	end
-	
-	--sprite:move(values.x, values.y, values.z)
 	
 	print("Moved sprite \""..args[1].."\" to "..values.x..", "..values.y..", "..values.z)
 end}

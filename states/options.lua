@@ -101,9 +101,8 @@ function Options.draw(self)
 	
 	local alias = {} -- translate from variable name to more readable option name
 	alias.skipSplash = "skip splash screen"
-	alias.view3D = "crossview 3D"
+	alias.view3D = "3D mode"
 	alias.eyeDistance = "3D intensity"
-	alias.smoothMovement = "smooth movement"
 	
 	for i=1, #self.items do
 		local y = 0.5 + (i * 0.05)
@@ -139,6 +138,7 @@ function Options.increment(self, amount)
 	
 	if value == true or value == false then -- option is a boolean
 		self.options[key] = not value
+		return
 	end
 	
 	if tonumber(value) ~= nil then -- option is a number
@@ -155,22 +155,34 @@ function Options.increment(self, amount)
 			if self.options[key] > maxima[key] then self.options[key] = maxima[key] end
 			if self.options[key] < minima[key] then self.options[key] = minima[key] end
 		end
-	elseif key == "resolution" then
-		local resolutions = {"640x480", "800x600", "1200x900", "1600x1200"}
-		local index = 2 -- default value
-		for i=1,#resolutions do
-			if resolutions[i] == value then index = i end
+	else -- choose from list of strings
+		local listData = {}
+		listData.resolution = {list={"640x480", "800x600", "1200x900", "1600x1200"}, def=2, cycle=false}
+		listData.view3D = {list={"off", "crossview", "3D viewer"}, def=1, cycle=true}
+		
+		local data = listData[key]
+		
+		local index = data.def -- default value
+		for i = 1, #data.list do
+			if data.list[i] == value then
+				index = i
+				break
+			end
 		end
 		
 		if amount > 0 then
 			index = index + 1
-			if index > #resolutions then index = #resolutions end
+			if index > #data.list then
+				if data.cycle then index = 1 else index = #data.list end
+			end
 		else
 			index = index - 1
-			if index < 1 then index = 1 end
+			if index < 1 then
+				if data.cycle then index = #data.list else index = 1 end
+			end
 		end
 		
-		self.options[key] = resolutions[index]
+		self.options[key] = data.list[index]
 	end
 	
 	if key == "volume" then

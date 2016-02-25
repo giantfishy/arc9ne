@@ -20,7 +20,7 @@ function Comic.makeCanvases(self)
 	local h = love.graphics.getHeight()
 	
 	if self.settings.fullscreen == true then
-		if self.settings.view3D == false then
+		if self.settings.view3D == "off" then
 			w = 4 * h / 3
 		else
 			h = 3 * w / 8
@@ -46,18 +46,19 @@ function Comic.draw(self)
 	end
 	
 	if sc ~= nil then
-		local smooth = self.settings.smoothMovement
-		if self.settings.view3D then
-			local eyedist = self.settings.eyeDistance
-			sc:draw(self.lefteye, eyedist/2, smooth)
-			sc:draw(self.righteye, -eyedist/2, smooth)
-			
-			love.graphics.draw(self.righteye, w*0.25, h*0.5, 0, 1, 1, self.righteye:getWidth()/2, self.righteye:getHeight()/2)
-			love.graphics.draw(self.lefteye, w*0.75, h*0.5, 0, 1, 1, self.lefteye:getWidth()/2, self.lefteye:getHeight()/2)
-		else
+		local smooth = true
+		if self.settings.view3D == "off" then
 			sc:draw(self.mainCanvas, 0, smooth)
 			
 			love.graphics.draw(self.mainCanvas, w*0.5, h*0.5, 0, 1, 1, self.mainCanvas:getWidth()/2, self.mainCanvas:getHeight()/2)
+		else
+			local eyedist = self.settings.eyeDistance
+			if self.settings.view3D == "crossview" then eyedist = -eyedist end
+			sc:draw(self.lefteye, -eyedist/2, smooth)
+			sc:draw(self.righteye, eyedist/2, smooth)
+			
+			love.graphics.draw(self.righteye, w*0.25, h*0.5, 0, 1, 1, self.righteye:getWidth()/2, self.righteye:getHeight()/2)
+			love.graphics.draw(self.lefteye, w*0.75, h*0.5, 0, 1, 1, self.lefteye:getWidth()/2, self.lefteye:getHeight()/2)
 		end
 	end
 end
