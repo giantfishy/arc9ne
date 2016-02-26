@@ -9,7 +9,6 @@ local Scene = {}
 Scene.__index = Scene
 
 local g = love.graphics
-local basedir = love.filesystem.getSourceBaseDirectory().."/arc9ne/"
 
 function Scene.new(filename)
 	local self = setmetatable({}, Scene)
@@ -28,7 +27,7 @@ function Scene.new(filename)
 	self.cam_x = 0
 	self.cam_y = 0
 	
-	self:loadScene(basedir.."story/"..filename..".txt")
+	self:loadScene("story/"..filename..".txt")
 	
 	return self
 end
@@ -99,7 +98,7 @@ end
 
 function Scene.loadScene(self, filename)
 	print("Reading scene file \""..filename.."\"...\n")
-	if io.open(filename) == nil then
+	if not love.filesystem.isFile(filename) then
 		print("File \""..filename.."\" does not exist!")
 		return
 	end
@@ -107,7 +106,7 @@ function Scene.loadScene(self, filename)
 	local loadingAssets = true
 	local dir = ""
 	
-	for line in io.lines(filename) do
+	for line in love.filesystem.lines(filename) do
 		line = line:gsub("\r\n?", "")
 		if line:len() == 0 then
 			loadingAssets = false
@@ -184,7 +183,18 @@ function parseKeyframer(args)
 end
 
 function Scene.loadImage(self, imagename, dimx, dimy, anim)
-	local img = g.newImage("assets/"..imagename..".png")
+	local filename = "assets/"..imagename
+	local img = nil
+	for i, extension in ipairs({".png", ".tga"}) do
+		if love.filesystem.isFile(filename..extension) then
+			img = g.newImage(filename..extension)
+			break
+		end
+	end
+	if img == nil then
+		print("Could not find file \""..imagename.."\"")
+		return
+	end
 	if dimx == nil then dimx = 1 end
 	if dimy == nil then dimy = 1 end
 	

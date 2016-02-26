@@ -17,7 +17,7 @@ function Menu.new()
 	self.options = Options.new(self)
 	
 	self.about = ""
-	for line in io.lines(love.filesystem.getSourceBaseDirectory().."/arc9ne/about.txt") do
+	for line in love.filesystem.lines("about.txt") do
 		line = line:gsub("\r\n?", "")
 		self.about = self.about.."\n"..line
 	end

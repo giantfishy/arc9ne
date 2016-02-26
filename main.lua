@@ -79,8 +79,7 @@ function changeState(stateType)
 		end
 	end
 	
-	local crossfadeTime = 0.3
-	local spd = 1/crossfadeTime
+	local spd = 4
 	if stateType == "menu" then
 		audio.menu.src:play()
 		audio.charselect.src:play()
@@ -93,7 +92,7 @@ function changeState(stateType)
 		audio.charselect.dvol = -spd
 	elseif stateType == "comic" then
 		audio.charselect.vol = 0.5
-		audio.charselect.dvol = -0.3
+		audio.charselect.dvol = -0.5
 	end
 	
 	if audio[stateType] ~= nil then
@@ -118,11 +117,10 @@ function loadScene(filename)
 end
 
 function sceneExists(filename)
-	local basedir = love.filesystem.getSourceBaseDirectory().."/arc9ne/"
-	if io.open(basedir.."story/"..filename..".txt") == nil then
-		return false
+	if love.filesystem.isFile("story/"..filename..".txt") then
+		return true
 	end
-	return true
+	return false
 end
 
 function getSettings()
@@ -166,7 +164,7 @@ function loadSettings()
 	if not fs.exists(filename) then
 		print("Writing default settings.\n")
 		local settingsFile = fs.newFile("settings.txt", "w")
-		for line in io.lines(love.filesystem.getSourceBaseDirectory().."/arc9ne/defaultsettings.txt") do
+		for line in love.filesystem.lines("defaultsettings.txt") do
 			settingsFile:write(line.."\r\n")
 		end
 		settingsFile:close()

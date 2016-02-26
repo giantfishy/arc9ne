@@ -44,19 +44,27 @@ styles.cubic = function(from, to, amt)
 	return from + y*(to - from)
 end
 
-styles.ease = function(from, to, amt)
+styles.decel = function(from, to, amt)
 	local sharpness = 10
 	local endpoint = math.pow(0.5, sharpness)
 	local y = 1 - (math.pow(0.5, amt*sharpness) - amt*endpoint)
 	return from + y*(to - from)
 end
 
-styles.iease = function(from, to, amt)
+styles.accel = function(from, to, amt)
 	amt = 1 - amt
 	local sharpness = 10
 	local endpoint = math.pow(0.5, sharpness)
 	local y = (math.pow(0.5, amt*sharpness) - amt*endpoint)
 	return from + y*(to - from)
+end
+
+styles.ease = function(from, to, amt)
+	if amt < 0.5 then
+		return from + (styles.accel(from, to, amt*2)-from)/2
+	else
+		return to - (to-styles.decel(from, to, amt*2-1))/2
+	end
 end
 
 function Keyframer.update(self, t)

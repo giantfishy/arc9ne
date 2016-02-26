@@ -35,7 +35,7 @@ function Options.new(parent)
 	
 	local file = {}
 	i = 1
-	for line in io.lines(love.filesystem.getSourceBaseDirectory().."/arc9ne/defaultsettings.txt") do
+	for line in love.filesystem.lines("defaultsettings.txt") do
 		file[i] = line
 		i = i + 1
 	end

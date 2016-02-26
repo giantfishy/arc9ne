@@ -51,6 +51,11 @@ Commands.place = {4, function(parent, args)
 	local y = tonumber(args[3])
 	local z = tonumber(args[4])
 	
+	if parent.images[img] == nil then
+		print("Could not place image \""..img.."\"")
+		return
+	end
+	
 	local data = parent.images[img]
 	local sprite = Sprite.new(data.img, x, y, z, data.dimx, data.dimy)
 	if data.animate ~= nil then sprite.animate = data.animate end
