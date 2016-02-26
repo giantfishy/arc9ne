@@ -7,6 +7,7 @@ require('auxiliary')
 
 local allStates = {}
 local state = nil
+local pausemenu = false
 local settings = nil
 local fonts = {}
 local audio = {}
@@ -44,6 +45,13 @@ function love.load()
 end
 
 function love.draw()
+	if pausemenu then
+		allStates.comic:draw()
+		
+		local c = Charselect.getColor(1)
+		love.graphics.setColor(c[1], c[2], c[3], 100)
+		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+	end
 	state:draw()
 end
 
@@ -70,15 +78,6 @@ function changeState(stateType)
 		resizeWindow()
 	end
 	
-	if stateType == "comic" then
-		newState = Comic.new()
-		allStates.comic = newState
-		if settings.view3D ~= "off" and settings.fullscreen == false then
-			local w = love.graphics.getWidth()
-			love.window.setMode(w, 3 * w / 8)
-		end
-	end
-	
 	local spd = 4
 	if stateType == "menu" then
 		audio.menu.src:play()
@@ -87,10 +86,10 @@ function changeState(stateType)
 	if (stateType == "charselect" and state == allStates.menu) then
 		audio.menu.dvol = -spd
 		audio.charselect.dvol = spd
-	elseif (stateType == "menu" and state == allStates.charselect) then
+	elseif (stateType == "menu" and (state == allStates.charselect or pausemenu)) then
 		audio.menu.dvol = spd
 		audio.charselect.dvol = -spd
-	elseif stateType == "comic" then
+	elseif stateType == "comic" and not pausemenu then
 		audio.charselect.vol = 0.5
 		audio.charselect.dvol = -0.5
 	end
@@ -99,6 +98,28 @@ function changeState(stateType)
 		local src = audio[stateType].src
 		if src ~= nil then src:play() end
 		if settings.volume == 0 then love.audio.pause() end
+	end
+	
+	if stateType == "comic" then
+		if pausemenu then
+			pausemenu = false
+			allStates.menu = Menu.new()
+		else
+			newState = Comic.new()
+			allStates.comic = newState
+			if settings.view3D ~= "off" and settings.fullscreen == false then
+				local w = love.graphics.getWidth()
+				love.window.setMode(w, 3 * w / 8)
+			end
+		end
+	elseif stateType == "menu" then
+		if pausemenu then
+			if state == allStates.menu then pausemenu = false end
+		elseif state == allStates.comic then
+			pausemenu = true
+		end
+		newState = Menu.new(pausemenu)
+		allStates.menu = newState
 	end
 	
 	if newState ~= nil then state = newState end

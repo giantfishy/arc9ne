@@ -5,10 +5,14 @@ local Options = require('states/options')
 local Menu = {}
 Menu.__index = Menu
 
-function Menu.new()
+function Menu.new(pausemenu)
 	local self = setmetatable({}, Menu)
 	
-	self.items = {"start", "continue", "options", "characters", "about", "exit"}
+	if pausemenu == nil then pausemenu = false end
+	self.pausemenu = pausemenu
+	
+	self.items = {"start", "options", "about", "exit"}
+	if pausemenu then self.items = {"resume", "options", "main menu", "exit"} end
 	self.selected = 1
 	
 	self.y = 1
@@ -32,12 +36,14 @@ function Menu.draw(self)
 	local w = love.graphics.getWidth()
 	local h = love.graphics.getHeight()
 	
-	local bgHeight = h * 1.2 -- height * 1.2 so the background is slightly larger than the window
-	local scale = bgHeight / self.bg:getHeight()
-	local itemNum = #self.items
-	if self.menu == "options" then itemNum = #self.options.items end
-	local parallax = (bgHeight - h) / itemNum
-	love.graphics.draw(self.bg, 0, (self.y-1) * -parallax, 0, scale, scale)
+	if not self.pausemenu then
+		local bgHeight = h * 1.2 -- height * 1.2 so the background is slightly larger than the window
+		local scale = bgHeight / self.bg:getHeight()
+		local itemNum = #self.items
+		if self.menu == "options" then itemNum = #self.options.items end
+		local parallax = (bgHeight - h) / itemNum
+		love.graphics.draw(self.bg, 0, (self.y-1) * -parallax, 0, scale, scale)
+	end
 	
 	local bandWidth = h*0.12
 	love.graphics.setColor(255, 255, 255, 100)
@@ -60,11 +66,7 @@ function Menu.draw(self)
 			elseif i > self.selected then
 				y = y + 0.05
 			end
-			if self.items[i] == "continue" and not love.filesystem.exists("progress.txt") then
-				love.graphics.setColor(255, 255, 255, 100)
-			else
-				love.graphics.setColor(255, 255, 255)
-			end
+			love.graphics.setColor(255, 255, 255)
 			if i == self.selected then setFont("selected") else setFont("menuItem") end
 			drawText(self.items[i], w*0.4, h*y, "right")
 		end
@@ -108,6 +110,9 @@ function Menu.keypressed(self, key)
 			local item = self.items[self.selected]
 			if item == "start" then
 				changeState("charselect")
+			elseif item == "resume" then
+				love.audio.resume()
+				changeState("comic")
 			elseif item == "options" then
 				self.options = Options.new(self)
 				self.menu = "options"
@@ -115,6 +120,9 @@ function Menu.keypressed(self, key)
 			elseif item == "about" then
 				self.menu = "about"
 				self.abouty = 0
+			elseif item == "main menu" then
+				love.audio.stop()
+				changeState("menu")
 			elseif item == "exit" then
 				love.event.quit()
 			end
@@ -131,7 +139,7 @@ function Menu.keypressed(self, key)
 		if key == "escape" then
 			love.audio.setVolume(getSettings().volume)
 			self.menu = "main"
-			self.selected = 3
+			self.selected = 2
 		elseif key == "space" or key == "return" or key == "kpenter" then
 			local newOptions = self.options.options
 			local resize = false

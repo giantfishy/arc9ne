@@ -1,6 +1,6 @@
+volume=0.6
 resolution=800x600
 fullscreen=false
-volume=0.6
 skipSplash=false
 view3D=off
 eyeDistance=0.1

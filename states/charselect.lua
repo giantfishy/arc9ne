@@ -134,4 +134,8 @@ function Charselect.keypressed(self, key)
 	end
 end
 
+function Charselect.getColor(i)
+	return parseHex(color[i])
+end
+
 return Charselect

@@ -34,6 +34,7 @@ end
 
 function Comic.load(self, filename)
 	self.currentscene = Scene.new(filename)
+	love.graphics.setBackgroundColor(0, 0, 0)
 end
 
 function Comic.draw(self)
@@ -77,6 +78,9 @@ end
 function Comic.keypressed(self, key)
 	if key == "space" or key == "return" or key == "kpenter" then
 		self.currentscene.paused = false
+	elseif key == "escape" then
+		love.audio.pause()
+		changeState("menu")
 	end
 end
 
