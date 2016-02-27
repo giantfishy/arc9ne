@@ -23,6 +23,17 @@ function Keyframer.add(self, t, style, values)
 		self.variables[key] = true
 	end
 	
+	-- check if a keyframe already exists at this time - if so, merge them
+	for i, f in ipairs(self.data) do
+		if f.t == t then
+			for key, value in pairs(values) do
+				if f.values[key] == nil then f.values[key] = value end
+			end
+			f.style = style
+			return
+		end
+	end
+	
 	self.data[#self.data+1] = keyframe
 	
 	-- make sure keyframes are in order
@@ -30,40 +41,34 @@ function Keyframer.add(self, t, style, values)
 end
 
 local styles = {}
-styles.linear = function(from, to, amt)
-	return from + amt*(to - from)
+styles.linear = function(amt)
+	return amt
 end
 
-styles.instant = function(from, to, amt)
-	return from
+styles.instant = function(amt)
+	return 0
 end
 
-styles.cubic = function(from, to, amt)
-	local y = 0.5 + (math.pow(math.abs(amt - 0.5), (1/3)) / (2*math.pow(0.5, (1/3))))
-	if amt < 0.5 then y = 1 - y end
-	return from + y*(to - from)
-end
-
-styles.decel = function(from, to, amt)
+styles.decel = function(amt)
 	local sharpness = 10
 	local endpoint = math.pow(0.5, sharpness)
 	local y = 1 - (math.pow(0.5, amt*sharpness) - amt*endpoint)
-	return from + y*(to - from)
+	return y
 end
 
-styles.accel = function(from, to, amt)
+styles.accel = function(amt)
 	amt = 1 - amt
 	local sharpness = 10
 	local endpoint = math.pow(0.5, sharpness)
 	local y = (math.pow(0.5, amt*sharpness) - amt*endpoint)
-	return from + y*(to - from)
+	return y
 end
 
-styles.ease = function(from, to, amt)
+styles.ease = function(amt)
 	if amt < 0.5 then
-		return from + (styles.accel(from, to, amt*2)-from)/2
+		return styles.accel(amt*2)/2
 	else
-		return to - (to-styles.decel(from, to, amt*2-1))/2
+		return 0.5 + styles.decel(amt*2-1)/2
 	end
 end
 
@@ -94,13 +99,32 @@ function Keyframer.update(self, t)
 			
 			if to ~= nil then
 				local func = styles[to.style] -- get ease function
+				local initial = from.values[var]
+				local final = to.values[var]
 				local amt = (t - from.t) / (to.t - from.t)
 				
 				if func == nil then func = styles.linear end
-				self.parent[var] = func(from.values[var], to.values[var], amt)
+				
+				if tonumber(initial) == nil or tonumber(final) == nil then
+					self.parent[var] = hexLerp(initial, final, amt, func)
+				else
+					self.parent[var] = initial + func(amt)*(final - initial)
+				end
 			end
 		end
 	end
+end
+
+function hexLerp(from, to, amt, func)
+	from = parseHex(from)
+	to = parseHex(to)
+	
+	local result = {}
+	for i = 1, 3 do
+		result[i] = math.floor(from[i] + func(amt)*(to[i] - from[i]))
+	end
+	
+	return encodeHex(result)
 end
 
 return Keyframer

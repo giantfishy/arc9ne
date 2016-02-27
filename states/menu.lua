@@ -154,7 +154,7 @@ function Menu.keypressed(self, key)
 				love.audio.rewind()
 			end
 			self.menu = "main"
-			self.selected = 3
+			self.selected = 2
 		elseif key == "up" then
 			self.selected = self.selected - 1
 			if self.selected < 1 then self.selected = #self.options.items end

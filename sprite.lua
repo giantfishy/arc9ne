@@ -12,6 +12,7 @@ function Sprite.new(img, x, y, z, dimx, dimy)
 	self.y = y
 	self.z = z
 	self.scale = 1
+	self.color = "#FFFFFF"
 	self.alpha = 255
 	
 	self.dimx = dimx
@@ -42,7 +43,12 @@ function Sprite.draw(self, canvas, offset_x, offset_y, smooth, scale)
 	end
 	
 	g.push("all")
-	g.setColor(255, 255, 255, self.alpha)
+	local c = {255, 255, 255}
+	if self.color ~= "#FFFFFF" then
+		c = parseHex(self.color)
+	end
+	g.setColor(c[1], c[2], c[3], self.alpha)
+	
 	if self.dimx == 1 and self.dimy == 1 then -- not a spritesheet
 		g.draw(self.img, draw_x, draw_y, 0, scale, scale, w/2, h/2)
 	else

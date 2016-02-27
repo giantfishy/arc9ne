@@ -155,15 +155,18 @@ Commands.key = {nil, function(parent, args)
 		end
 	end
 	
-	if values.x == nil then values.x = sprite.x end
-	if values.y == nil then values.y = sprite.y end
-	if values.z == nil then values.z = sprite.z end
-	
+	local msg = "Set values of sprite \""..args[1].."\":"
+	local changedValues = false
 	for key, value in pairs(values) do
 		if value ~= nil then sprite[key] = value end
+		
+		msg = msg.." "..key.." = "..value..";"
+		changedValues = true
 	end
 	
-	print("Moved sprite \""..args[1].."\" to "..values.x..", "..values.y..", "..values.z)
+	if changedValues then
+		print(msg:sub(1, msg:len()-1))
+	end
 end}
 
 return Commands

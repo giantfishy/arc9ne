@@ -1,4 +1,7 @@
+/utility
 title
+act1
+black
 /bg
 night
 /noah
@@ -11,20 +14,30 @@ intro.ogg
 
 #0
 place title 0 0 0.4
-place night 0 0 0
-place moon -0.7 -0.4 0.03
+place night 0 0.3 0.2
+place moon -0.7 0.3 0.25
+place black 0 0 0.21
 place hill1 0 4 1
 place hill2 0 3 0.75
 place hill3 0 2 0.5
+place act1 0.75 2.7 0.8
 camera cam_y=0
+key moon alpha=0
+key black scale=10
 
 #4
 camera cam_y=0
 play intro
+key black alpha=255
+
+#6
+key moon alpha=255 accel
+
+#8
+key black alpha=0
 
 #10
 camera cam_y=3 ease
 remove title
 
 #12
-clear

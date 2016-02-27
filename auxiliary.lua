@@ -53,6 +53,26 @@ function parseHex(hex)
 	return color
 end
 
+function encodeHex(rgb)
+	local result = "#"
+	
+	for i = 1, 3 do
+		local a = math.floor(rgb[i] / 16) -- first digit
+		local b = rgb[i] - 16*a -- second digit
+		
+		for j, d in ipairs({a, b}) do
+			if d >= 10 then
+				d = string.sub("ABCDEF", d-9, d-9)
+				if j == 1 then a = d else b = d end -- eugh
+			end
+		end
+		
+		result = result..a..b
+	end
+	
+	return result
+end
+
 function lerpColor(c1, c2, amt)
 	local result = {}
 	for i=1,3 do
