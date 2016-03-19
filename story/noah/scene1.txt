@@ -9,8 +9,10 @@ moon
 hill1
 hill2
 hill3
+drumkit|4x4x8
+light|2x2x4
 /sound/noah
-intro.ogg
+intro2.ogg
 
 #0
 place title 0 0 0.4
@@ -27,7 +29,7 @@ key black scale=10
 
 #4
 camera cam_y=0
-play intro
+play intro2
 key black alpha=255
 
 #6
@@ -37,7 +39,14 @@ key moon alpha=255 accel
 key black alpha=0
 
 #10
-camera cam_y=3 ease
+camera cam_x=0 cam_y=3 ease
 remove title
 
 #12
+clear
+camera cam_x=0 cam_y=0 instant
+place light -0.4 0.3 0.95
+place drumkit -0.4 0.1 1
+
+#31.5
+key drumkit animate=0 instant

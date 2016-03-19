@@ -9,7 +9,7 @@ local acts = {}
 acts[1] = {"noah", "izzy", "cleo"}
 acts[2] = {"diana", "mark", "liam"}
 acts[3] = {"hana", "olly", "alex"}
-acts[4] = {"felix", "petra", "scott"}
+acts[4] = {"felix", "petra", "lucas"}
 
 local unlocked = {}
 

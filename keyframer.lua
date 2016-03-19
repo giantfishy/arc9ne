@@ -41,6 +41,7 @@ function Keyframer.add(self, t, style, values)
 end
 
 local styles = {}
+
 styles.linear = function(amt)
 	return amt
 end
@@ -57,11 +58,7 @@ styles.decel = function(amt)
 end
 
 styles.accel = function(amt)
-	amt = 1 - amt
-	local sharpness = 10
-	local endpoint = math.pow(0.5, sharpness)
-	local y = (math.pow(0.5, amt*sharpness) - amt*endpoint)
-	return y
+	return 1 - styles.decel(1 - amt)
 end
 
 styles.ease = function(amt)
@@ -70,6 +67,10 @@ styles.ease = function(amt)
 	else
 		return 0.5 + styles.decel(amt*2-1)/2
 	end
+end
+
+styles.random = function(amt)
+	return math.random()
 end
 
 function Keyframer.update(self, t)

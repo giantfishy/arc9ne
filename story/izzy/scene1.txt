@@ -1,0 +1,8 @@
+/izzy/dream
+bg
+/utility
+title
+
+#0
+place dream/bg 0 0 0
+place title 0 0 0.8

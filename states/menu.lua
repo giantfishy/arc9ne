@@ -11,7 +11,7 @@ function Menu.new(pausemenu)
 	if pausemenu == nil then pausemenu = false end
 	self.pausemenu = pausemenu
 	
-	self.items = {"start", "options", "about", "exit"}
+	self.items = {"start", "options", "characters", "about", "exit"}
 	if pausemenu then self.items = {"resume", "options", "main menu", "exit"} end
 	self.selected = 1
 	
