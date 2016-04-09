@@ -199,7 +199,7 @@ function Scene.loadImage(self, imagename, dimx, dimy, anim)
 	if dimy == nil then dimy = 1 end
 	
 	local key = imagename -- where to put the image in self.images
-	if key:find("/") ~= nil then
+	while key:find("/") ~= nil do
 		key = key:sub(key:find("/") + 1)
 	end
 	if self.images[key] ~= nil then

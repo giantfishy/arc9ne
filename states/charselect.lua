@@ -6,10 +6,10 @@ Charselect.__index = Charselect
 local g = love.graphics
 
 local acts = {}
-acts[1] = {"noah", "izzy", "cleo"}
-acts[2] = {"diana", "mark", "liam"}
-acts[3] = {"hana", "olly", "alex"}
-acts[4] = {"felix", "petra", "lucas"}
+acts[1] = {"izzy", "noah", "cleo"}
+acts[2] = {"mark", "liam", "diana"}
+acts[3] = {"alex", "hana", "olly"}
+acts[4] = {"lucas", "felix", "petra"}
 
 local unlocked = {}
 

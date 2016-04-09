@@ -2,7 +2,14 @@
 bg
 /utility
 title
+/sound/izzy
+dream.ogg
 
 #0
-place dream/bg 0 0 0
 place title 0 0 0.8
+place bg 0 0 0
+key bg alpha=0
+
+#2
+play dream
+key bg alpha=255 accel
