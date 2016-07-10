@@ -32,11 +32,14 @@ key black scale=10
 camera cam_y=0
 play intro2
 key black alpha=255
-text noah 1.5 hello my name is noah
 
 #6
 key moon alpha=255 accel
-text cleo 5 oh hi |does this work
+text alex hi guys i had a cool idea
+text hana yeah what is it
+text alex why don't we pause this scene so it can be used to test |if the pause thing is working properly
+text noah garbage idea
+text diana we are, all of us, one-dimensional characters
 
 #8
 key black alpha=0
@@ -56,9 +59,6 @@ place drumkit -0.4 0.1 1
 
 #12.5
 key light animate=1 instant
-
-#14
-text diana whats up
 
 #31.5
 key drumkit animate=0 instant

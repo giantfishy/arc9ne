@@ -23,6 +23,7 @@ function Scene.new(filename)
 	self.time = -0.1
 	self.keyframe = 0
 	self.paused = false
+	self.bookmark = 1
 	self.text = nil
 	
 	self.cam_x = 0
@@ -120,7 +121,7 @@ function Scene.update(self, dt)
 		if self.time > nextKey.t then
 			self.keyframe = self.keyframe + 1
 			print("== #"..nextKey.t.." ==")
-			self:doKeyframe(nextKey.commands)
+			self:doKeyframe(nextKey.commands, dt)
 			print("")
 		end
 	else
@@ -279,15 +280,28 @@ function Scene.playAudio(self, name)
 	print("Started playing audio file \""..name.."\"")
 end
 
-function Scene.doKeyframe(self, commands)
-	for i, c in ipairs(commands) do		
-		local tokens = splitStr(c)
-		if c == nil then
-			print("Command \""..c.."\" failed to parse!")
-		elseif c ~= "" then
-			Commands.parse(self, c)
+function Scene.doKeyframe(self, commands, dt)
+	local didCommands = false
+	
+	for i, c in ipairs(commands) do
+		if i >= self.bookmark then
+			local tokens = splitStr(c)
+			if c == nil then
+				print("Command \""..c.."\" failed to parse!")
+			elseif c ~= "" then
+				Commands.parse(self, c)
+				didCommands = true
+				if(self.paused) then
+					self.bookmark = i+1
+					self.keyframe = self.keyframe - 1
+					self.time = self.time - dt
+					break
+				end
+			end
 		end
 	end
+	
+	if not didCommands then self.bookmark = 1 end -- reset bookmark if the keyframe was empty
 end
 
 return Scene
