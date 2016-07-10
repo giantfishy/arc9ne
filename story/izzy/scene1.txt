@@ -1,5 +1,6 @@
 /izzy/dream
 bg
+izzy1|2x1x0
 /utility
 title
 /sound/izzy
@@ -9,7 +10,24 @@ dream.ogg
 place title 0 0 0.8
 place bg 0 0 0
 key bg alpha=0
+place izzy1 0 0.25 0.5
+key izzy1 alpha=0
 
-#2
+#3
+key title y=0 z=0.8 scale=1
+key izzy1 alpha=0
+
+#4
+key bg alpha=0
+
+#5
+key izzy1 alpha=255 ease
+key title y=-0.5 z=0.4 scale=0.5 ease
+
+#6
 play dream
 key bg alpha=255 accel
+key izzy1 animate=0.42 instant
+
+#9
+key izzy1 animate=0 instant

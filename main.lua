@@ -5,7 +5,7 @@ Charselect = require('states/charselect')
 
 require('auxiliary')
 
-local allStates = {}
+allStates = {}
 local state = nil
 local pausemenu = false
 local settings = nil
@@ -48,8 +48,7 @@ function love.draw()
 	if pausemenu then
 		allStates.comic:draw()
 		
-		local c = Charselect.getColor(1)
-		love.graphics.setColor(c[1], c[2], c[3], 100)
+		love.graphics.setColor(0, 0, 0, 150)
 		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 	end
 	state:draw()

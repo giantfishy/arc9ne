@@ -145,6 +145,43 @@ Commands.replace = {2, function(parent, args)
 	print("Replaced sprite \""..args[1].."\" with \""..args[2].."\"")
 end}
 
+Commands.text = {nil, function(parent, args)
+	local character = ""
+	local t = 0
+	local msg = ""
+	
+	local start = 1
+	
+	if #args >= 3 then
+		-- this is so awful i'm sorry
+		if love.filesystem.isFile("assets/char_icons/"..args[1]..".tga") then
+			character = args[1]
+			start = 2
+			
+			if tonumber(args[2]) ~= nil then
+				t = tonumber(args[2])
+				start = 3
+			end
+		end
+	end
+	
+	for i = start, #args do
+		msg = msg..args[i]:gsub("|", "\n").." " -- replace "|" with a newline
+	end
+	
+	print(character..": "..msg)
+	
+	if t == 0 then Commands.parse(parent, "pause") end
+	
+	local text = {}
+	text.ch = character
+	text.t = t
+	text.msg = msg
+	text.ease = 1
+	
+	parent.text = text
+end}
+
 Commands.key = {nil, function(parent, args)
 	local sprite = parent.sprites[args[1]]
 	local values = {}

@@ -23,6 +23,7 @@ function Scene.new(filename)
 	self.time = -0.1
 	self.keyframe = 0
 	self.paused = false
+	self.text = nil
 	
 	self.cam_x = 0
 	self.cam_y = 0
@@ -59,6 +60,31 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		sprite:draw(canvas, -self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
 	end
 	
+	if self.text ~= nil then
+		local h = g.getHeight() * 0.2
+		local x = h/2
+		local y = g.getHeight() - h * (1 - self.text.ease)
+		
+		g.setColor(255, 255, 255, 150)
+		g.rectangle("fill", 0, y, g.getWidth(), h)
+		
+		if self.text.ch ~= "" then
+			x = h
+			local img = allStates.charselect.img[self.text.ch]
+			local scale = 1
+			if h < 128 then scale = h / 128 end
+			g.setColor(255, 255, 255)
+			g.draw(img, x/2, y + h/2, 0, scale, scale, 64, 64)
+		end
+		
+		g.setColor(0, 0, 0)
+		setFont("selected")
+		drawText(self.text.ch:upper()..":", x, y + h/4, "left")
+		setFont("menuItem")
+		drawText(self.text.msg, x, y + h/2, "left")
+		g.setColor(255, 255, 255)
+	end
+	
 	-- for some reason i need this line or it won't clear the sprites. what's going on
 	drawText(#spr, -50, -50, "left")
 	
@@ -76,6 +102,17 @@ function Scene.update(self, dt)
 	for name, sprite in pairs(self.sprites) do
 		sprite:update(dt)
 		if sprite.keyframer ~= nil then sprite.keyframer:update(self.time) end
+	end
+	
+	if self.text ~= nil then
+		self.text.ease = self.text.ease * 0.6
+		
+		if not self.paused then
+			self.text.t = self.text.t - dt
+			if self.text.t <= 0 then
+				self.text = nil
+			end
+		end
 	end
 	
 	nextKey = self:getNextKeyframe()
