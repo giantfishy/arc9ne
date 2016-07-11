@@ -23,8 +23,7 @@ function Scene.new(filename)
 	self.time = -0.1
 	self.keyframe = 0
 	self.paused = false
-	self.bookmark = 1
-	self.text = nil
+	self.text = {}
 	
 	self.cam_x = 0
 	self.cam_y = 0
@@ -62,17 +61,21 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		sprite:draw(canvas, -self.cam_x + eyeoffset, -self.cam_y, smooth, scale)
 	end
 	
-	if self.text ~= nil then
+	if #self.text > 0 then
+		--for i, txt in ipairs(self.text) do drawText(txt.msg, 20, 20 + i*20, "left") end
+		
+		local prompt = self.text[1]
+		
 		local h = g.getHeight() * 0.2
 		local x = h/2
-		local y = g.getHeight() - h * (1 - self.text.ease)
+		local y = g.getHeight() - h * (1 - prompt.ease)
 		
 		g.setColor(255, 255, 255, 150)
 		g.rectangle("fill", 0, y, g.getWidth(), h)
 		
-		if self.text.ch ~= "" then
+		if prompt.ch ~= "" then
 			x = h
-			local img = char_img[self.text.ch]
+			local img = char_img[prompt.ch]
 			local scale = 1
 			if h < 150 then scale = h / 150 end
 			g.setColor(255, 255, 255)
@@ -80,12 +83,19 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 			
 			g.setColor(0, 0, 0)
 			setFont("selected")
-			drawText(self.text.ch:upper()..":", x, y + h/4, "left")
+			drawText(prompt.ch:upper()..":", x, y + h/4, "left")
 		end
 		
 		g.setColor(0, 0, 0)
+		if prompt.t == 0 then -- draw a little triangle
+			local r = h*0.08
+			local tri_x = g.getWidth() - h/5
+			local tri_y = g.getHeight() - h/5 - math.abs(r * math.sin(love.timer.getTime()*5))
+			g.polygon("fill", tri_x-r, tri_y, tri_x+r, tri_y, tri_x, tri_y+r*math.sqrt(2))
+		end
+		
 		setFont("menuItem")
-		drawText(self.text.msg, x, y + h/2, "left")
+		drawText(prompt.msg, x, y + h/2, "left")
 		g.setColor(255, 255, 255)
 	end
 	
@@ -108,13 +118,17 @@ function Scene.update(self, dt)
 		if sprite.keyframer ~= nil then sprite.keyframer:update(self.time) end
 	end
 	
-	if self.text ~= nil then
-		self.text.ease = self.text.ease * 0.6
+	if #self.text > 0 then
+		local prompt = self.text[1]
+		prompt.ease = prompt.ease * 0.6
 		
 		if not self.paused then
-			self.text.t = self.text.t - dt
-			if self.text.t <= 0 then
-				self.text = nil
+			prompt.t = prompt.t - dt
+			if prompt.t <= 0 then
+				table.remove(self.text, 1)
+				if #self.text > 0 and self.text[1].t == 0 then
+					self.paused = true
+				end
 			end
 		end
 	end
@@ -131,6 +145,14 @@ function Scene.update(self, dt)
 		return true -- finished
 	end
 	return false -- not finished
+end
+
+function Scene.addPrompt(self, data)
+	if data.t == 0 and #self.text == 0 then
+		self.paused = true
+	end
+	
+	table.insert(self.text, data)
 end
 
 function Scene.getNextKeyframe(self)
@@ -284,27 +306,14 @@ function Scene.playAudio(self, name)
 end
 
 function Scene.doKeyframe(self, commands, dt)
-	local didCommands = false
-	
 	for i, c in ipairs(commands) do
-		if i >= self.bookmark then
-			local tokens = splitStr(c)
-			if c == nil then
-				print("Command \""..c.."\" failed to parse!")
-			elseif c ~= "" then
-				Commands.parse(self, c)
-				didCommands = true
-				if(self.paused) then
-					self.bookmark = i+1
-					self.keyframe = self.keyframe - 1
-					self.time = self.time - dt
-					break
-				end
-			end
+		local tokens = splitStr(c)
+		if c == nil then
+			print("Command \""..c.."\" failed to parse!")
+		elseif c ~= "" then
+			Commands.parse(self, c)
 		end
 	end
-	
-	if not didCommands then self.bookmark = 1 end -- reset bookmark if the keyframe was empty
 end
 
 return Scene

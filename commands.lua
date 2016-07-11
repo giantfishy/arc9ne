@@ -170,17 +170,16 @@ Commands.text = {nil, function(parent, args)
 	end
 	
 	if character == "nil" then character = "" end -- in case a narrative dialogue prompt needs to start with a character name
-	if t == 0 then Commands.parse(parent, "pause") end
 	
 	print(character:upper()..": "..msg)
 	
-	local text = {}
-	text.ch = character
-	text.t = t
-	text.msg = msg
-	text.ease = 1
+	local data = {}
+	data.ch = character
+	data.t = t
+	data.msg = msg
+	data.ease = 1
 	
-	parent.text = text
+	parent:addPrompt(data)
 end}
 
 Commands.key = {nil, function(parent, args)
