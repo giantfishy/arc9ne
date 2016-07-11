@@ -44,6 +44,7 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 	g.setCanvas(canvas)
 	g.clear()
 	g.push()
+	g.setColor(255, 255, 255)
 	
 	local spr = {}
 	for name, sprite in pairs(self.sprites) do
@@ -71,16 +72,18 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		
 		if self.text.ch ~= "" then
 			x = h
-			local img = allStates.charselect.img[self.text.ch]
+			local img = char_img[self.text.ch]
 			local scale = 1
-			if h < 128 then scale = h / 128 end
+			if h < 150 then scale = h / 150 end
 			g.setColor(255, 255, 255)
 			g.draw(img, x/2, y + h/2, 0, scale, scale, 64, 64)
+			
+			g.setColor(0, 0, 0)
+			setFont("selected")
+			drawText(self.text.ch:upper()..":", x, y + h/4, "left")
 		end
 		
 		g.setColor(0, 0, 0)
-		setFont("selected")
-		drawText(self.text.ch:upper()..":", x, y + h/4, "left")
 		setFont("menuItem")
 		drawText(self.text.msg, x, y + h/2, "left")
 		g.setColor(255, 255, 255)

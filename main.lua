@@ -5,12 +5,14 @@ Charselect = require('states/charselect')
 
 require('auxiliary')
 
-allStates = {}
+local allStates = {}
 local state = nil
 local pausemenu = false
 local settings = nil
 local fonts = {}
 local audio = {}
+
+char_img = {}
 
 function love.load()
 	settings = loadSettings()
@@ -32,6 +34,11 @@ function love.load()
 	fonts["selected"] = love.graphics.newFont("fonts/CaviarDreams_Bold.ttf", 36)
 	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	fonts["small"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 20)
+	
+	local chars = {"alex", "liam", "noah", "hana", "diana", "mark", "olly", "izzy", "cleo", "felix", "lucas", "petra"}
+	for i, c in ipairs(chars) do
+		char_img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
+	end
 	
 	for i, name in ipairs(stateNames) do
 		local cl = name:sub(1, 1):upper()..name:sub(2) -- capitalise first letter

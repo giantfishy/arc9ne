@@ -153,8 +153,8 @@ Commands.text = {nil, function(parent, args)
 	local start = 1
 	
 	if #args >= 3 then
-		-- this is so awful i'm sorry
-		if love.filesystem.isFile("assets/char_icons/"..args[1]..".tga") then
+		-- this is a bit awful i'm sorry
+		if args[1] == "nil" or love.filesystem.isFile("assets/char_icons/"..args[1]..".tga") then
 			character = args[1]
 			start = 2
 			
@@ -169,9 +169,10 @@ Commands.text = {nil, function(parent, args)
 		msg = msg..args[i]:gsub("|", "\n").." " -- replace "|" with a newline
 	end
 	
-	print(character..": "..msg)
-	
+	if character == "nil" then character = "" end -- in case a narrative dialogue prompt needs to start with a character name
 	if t == 0 then Commands.parse(parent, "pause") end
+	
+	print(character:upper()..": "..msg)
 	
 	local text = {}
 	text.ch = character

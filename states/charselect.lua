@@ -32,10 +32,10 @@ function Charselect.new()
 	self.img = {}
 	for actnum, chars in ipairs(acts) do
 		for i, c in ipairs(chars) do
-			self.img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
+			self.img[c] = char_img[c]
 			
-			if sceneExists(chars[i].."/scene1") then
-				unlocked[chars[i]] = true
+			if sceneExists(c.."/scene1") then
+				unlocked[c] = true
 			end
 		end
 	end
