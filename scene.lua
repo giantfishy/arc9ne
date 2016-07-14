@@ -90,7 +90,7 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 		if prompt.t == 0 then -- draw a little triangle
 			local r = h*0.08
 			local tri_x = g.getWidth() - h/5
-			local tri_y = g.getHeight() - h/5 - math.abs(r * math.sin(love.timer.getTime()*5))
+			local tri_y = y + h*0.8 - math.abs(r * math.sin(love.timer.getTime()*5))
 			g.polygon("fill", tri_x-r, tri_y, tri_x+r, tri_y, tri_x, tri_y+r*math.sqrt(2))
 		end
 		
