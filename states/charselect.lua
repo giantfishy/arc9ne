@@ -7,7 +7,7 @@ local g = love.graphics
 
 local acts = {}
 acts[1] = {"alex", "cleo", "mark"}
-acts[2] = {"olly", "noah", "liam"}
+acts[2] = {"nika", "noah", "liam"}
 acts[3] = {"hana", "izzy", "diana"}
 acts[4] = {"lucas", "petra", "felix"}
 

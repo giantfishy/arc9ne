@@ -20,7 +20,12 @@ function splitStr(str, split)
 end
 
 function startsWith(str, start)
-	return (str:sub(1, start:len()) == start)
+	return str:find(start) == 1
+	--return (str:sub(1, start:len()) == start)
+end
+
+function endsWith(str, suffix)
+	return str:find(suffix) == (str:len() - suffix:len() + 1)
 end
 
 function parseHex(hex)

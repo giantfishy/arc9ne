@@ -35,7 +35,7 @@ function love.load()
 	fonts["menuItem"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 28)
 	fonts["small"] = love.graphics.newFont("fonts/CaviarDreams.ttf", 20)
 	
-	local chars = {"alex", "liam", "noah", "hana", "diana", "mark", "olly", "izzy", "cleo", "felix", "lucas", "petra"}
+	local chars = {"alex", "liam", "noah", "hana", "diana", "mark", "nika", "izzy", "cleo", "felix", "lucas", "petra"}
 	for i, c in ipairs(chars) do
 		char_img[chars[i]] = love.graphics.newImage("assets/char_icons/"..c..".tga")
 	end

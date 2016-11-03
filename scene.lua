@@ -79,11 +79,12 @@ function Scene.draw(self, canvas, eyeoffset, smooth)
 			local scale = 1
 			if h < 150 then scale = h / 150 end
 			g.setColor(255, 255, 255)
+			if prompt.obscure == true then g.setColor(0, 0, 0) end
 			g.draw(img, x/2, y + h/2, 0, scale, scale, 64, 64)
 			
 			g.setColor(0, 0, 0)
 			setFont("selected")
-			drawText(prompt.ch:upper()..":", x, y + h/4, "left")
+			drawText(prompt.alias:upper()..":", x, y + h/4, "left")
 		end
 		
 		g.setColor(0, 0, 0)

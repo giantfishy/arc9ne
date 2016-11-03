@@ -147,15 +147,30 @@ end}
 
 Commands.text = {nil, function(parent, args)
 	local character = ""
+	local alias = ""
 	local t = 0
 	local msg = ""
+	local obscure = false
 	
-	local start = 1
+	local start = 1 -- index of the start of the message text
 	
 	if #args >= 3 then
 		-- this is a bit awful i'm sorry
-		if args[1] == "nil" or love.filesystem.isFile("assets/char_icons/"..args[1]..".tga") then
-			character = args[1]
+		if args[1] == "nil" or love.filesystem.isFile("assets/char_icons/"..args[1]..".tga") or endsWith(args[1], ")") then
+			local origin = args[1]
+			local bracket_index = origin:find("%(")
+			if bracket_index == nil then
+				character = origin
+				alias = origin
+			else
+				alias = origin:sub(1, bracket_index-1) -- strip from before bracket
+				if endsWith(alias, "_") then -- obscure character's face
+					alias = alias:sub(1, alias:len() - 1)
+					obscure = true
+				end
+				alias = alias:gsub("_", " ") -- replace underscores with spaces
+				character = origin:sub(bracket_index+1, origin:len()-1) -- strip from inside brackets
+			end
 			start = 2
 			
 			if tonumber(args[2]) ~= nil then
@@ -175,6 +190,8 @@ Commands.text = {nil, function(parent, args)
 	
 	local data = {}
 	data.ch = character
+	data.alias = alias
+	data.obscure = obscure
 	data.t = t
 	data.msg = msg
 	data.ease = 1
